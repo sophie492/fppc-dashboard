@@ -115,13 +115,19 @@ app.get('/api/me', (req, res) => {
   }
 });
 
-// Ramp budget data - updated via POST /api/ramp-budget
-let rampBudget = {
-  limit: 1600,
-  spent: 1558.59,
-  remaining: 41.41,
-  updatedAt: '2026-03-25'
-};
+// Ramp budget data - persisted to file, updated via POST /api/ramp-budget
+const RAMP_FILE = path.join(DATA_DIR, 'ramp-budget.json');
+const DEFAULT_BUDGET = { limit: 1600, spent: 1591.08, remaining: 8.92, updatedAt: '2026-03-25' };
+function loadRampBudget() {
+  try {
+    if (fs.existsSync(RAMP_FILE)) return JSON.parse(fs.readFileSync(RAMP_FILE, 'utf8'));
+  } catch (e) { console.error('Error loading ramp budget:', e); }
+  return { ...DEFAULT_BUDGET };
+}
+function saveRampBudget(data) {
+  try { fs.writeFileSync(RAMP_FILE, JSON.stringify(data)); } catch (e) { console.error('Error saving ramp budget:', e); }
+}
+let rampBudget = loadRampBudget();
 
 // GET current budget
 app.get('/api/ramp-budget', (req, res) => {
@@ -139,6 +145,7 @@ app.post('/api/ramp-budget', express.json(), (req, res) => {
   if (limit !== undefined) rampBudget.limit = Number(limit);
   if (remaining !== undefined) rampBudget.remaining = Number(remaining);
   rampBudget.updatedAt = new Date().toISOString().split('T')[0];
+  saveRampBudget(rampBudget);
   res.json(rampBudget);
 });
 
