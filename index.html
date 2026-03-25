@@ -3682,6 +3682,7 @@ function renderSuggestions() {
         ${approveBtn}
         <button class="btn btn-outline admin-only" onclick="editSuggestion(${i})" title="Edit">✏️</button>
         <button class="btn btn-outline admin-only" onclick="deleteSuggestion(${i})" title="Remove">🗑️</button>
+        <button class="btn btn-outline admin-only" onclick="moveSuggestionToMain(${i})" title="Move to main page" style="background:#294339;color:#fff;border-color:#294339;">📋 Move to Main</button>
       </div>
       ${sVotersText}
     </div>`;
@@ -3754,6 +3755,33 @@ function deleteSuggestion(index) {
     renderSuggestions();
   }
 }
+
+      function moveSuggestionToMain(index) {
+        var s = suggestions[index];
+        if (!s) return;
+        var catMap = {social: "sfEvents", food: "sfEvents", volunteer: "volunteerEvents", team: "teamEvents"};
+        var arrayName = catMap[s.type] || "sfEvents";
+        var targetArray = window[arrayName];
+        if (!targetArray) { alert("Could not find target array: " + arrayName); return; }
+        var isFree = !s.cost || s.cost === "Free" || s.cost === "$0" || s.cost === "0";
+        var newEvent = {
+          title: s.title,
+          date: s.date || "TBD",
+          location: s.location || "TBD",
+          description: s.description || "",
+          type: s.type === "food" ? "food" : s.type,
+          free: isFree,
+          price: isFree ? null : s.cost,
+          link: s.url || null
+        };
+        targetArray.push(newEvent);
+        suggestions.splice(index, 1);
+        localStorage.setItem("fppc-suggestions", JSON.stringify(suggestions));
+        renderSuggestions();
+        renderAllGrids();
+        var tabNames = {sfEvents: "SF Events", volunteerEvents: "Volunteer", teamEvents: "Team Building"};
+        showToast("Moved to " + (tabNames[arrayName] || arrayName) + " tab!");
+      }
 
 async function retryWebResearch(index) {
   const s = suggestions[index];
