@@ -3985,7 +3985,8 @@ function renderHHList() {
   count.textContent = `(${hhSpots.length})`;
 
   container.innerHTML = hhSpots.map((spot, i) => {
-    const mapLink = spot.link || ('https://www.google.com/maps/search/' + encodeURIComponent(spot.name + ' San Francisco'));
+    const mapLink = 'https://www.google.com/maps/search/' + encodeURIComponent(spot.name + ' ' + (spot.area || '') + ' San Francisco');
+            const siteLink = spot.link || null;
     const nagStatus = spot.naGuinness === true ? 'yes' : spot.naGuinness === false ? 'no' : 'unknown';
     const nagBadge = nagStatus === 'yes' ? '<span class="nag-badge nag-yes" title="Serves NA Guinness">🍺 NA Guinness</span>'
       : nagStatus === 'no' ? '<span class="nag-badge nag-no" title="No NA Guinness">🚫 No NA Guinness</span>'
@@ -4010,7 +4011,8 @@ function renderHHList() {
             <button class="nag-btn ${nagStatus === 'unknown' ? 'active-unknown' : ''}" onclick="event.stopPropagation();setNAGuinness(${i}, null)" title="Unknown">? Unsure</button>
           </div>
         </div>
-        <a href="${mapLink}" target="_blank">View on Map ↗</a>
+        ${siteLink ? `<a href="${siteLink}" target="_blank" style="margin-right:12px;">Website ↗</a>` : ''}
+                <a href="${mapLink}" target="_blank">View on Map ↗</a>
       </div>
     </div>`;
   }).join('');
