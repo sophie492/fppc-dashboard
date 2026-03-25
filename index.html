@@ -2264,6 +2264,7 @@ requestAnimationFrame(() => {
 // ========== ROLE SYSTEM ==========
 const FPPC_PASSWORD = 'fppc2026';
 let isAdmin = false; // set by auth system
+let canAdmin = false; // true if user has admin rights
 
 function applyRole() {
   if (isAdmin) {
@@ -2275,13 +2276,21 @@ function applyRole() {
 }
 
 function renderRoleBadge() {
-  const container = document.getElementById('role-badge');
-  if (isAdmin) {
-    container.innerHTML = `<button class="role-btn fppc-admin" onclick="logoutAdmin()">🎉 FPPC Member · Log Out</button>`;
-  } else {
-    container.innerHTML = `<button class="role-btn employee" onclick="window.location.href='/auth/google'">🔒 Employee View · Sign in with Google</button>`;
+    const container = document.getElementById('role-badge');
+    if (isAdmin) {
+      container.innerHTML = `<button class="role-btn fppc-admin" onclick="toggleAdmin()">🎉 Admin Mode · Switch to Employee View</button>`;
+    } else if (canAdmin) {
+      container.innerHTML = `<button class="role-btn employee" onclick="toggleAdmin()">👤 Employee View · Switch to Admin</button>`;
+    } else {
+      container.innerHTML = `<button class="role-btn employee">👤 Logged In</button>`;
+    }
   }
-}
+
+  function toggleAdmin() {
+    if (!canAdmin) return;
+    isAdmin = !isAdmin;
+    applyRole();
+  }
 
 function showLoginModal() {
       window.location.href = '/auth/google';
@@ -2292,33 +2301,7 @@ function showLoginModal() {
     }
 
     // Auto-login: check if user is authenticated via Google OAuth
-    (function checkAutoLogin() {
-      fetch('/api/me')
-        .then(function(r) { return r.json(); })
-        .then(function(data) {
-          if (data.loggedIn && data.isAdmin) {
-            /* role set by auth */
-            let isAdmin = true;
-            // Update login button to show logged-in state
-            const loginBtn = document.querySelector('.role-btn.employee');
-            if (loginBtn) {
-              loginBtn.textContent = '✅ Logged in as ' + data.name;
-              loginBtn.onclick = function() { window.location.href = '/auth/logout'; };
-            }
-            // Show admin-only elements
-            document.querySelectorAll('.admin-only').forEach(function(el) {
-              el.style.display = '';
-            });
-          } else if (data.loggedIn && !data.isAdmin) {
-            const loginBtn = document.querySelector('.role-btn.employee');
-            if (loginBtn) {
-              loginBtn.textContent = '👤 ' + data.name + ' (View Only)';
-              loginBtn.onclick = function() { window.location.href = '/auth/logout'; };
-            }
-          }
-        })
-        .catch(function() { /* not logged in, keep default button */ });
-    })();
+    (function checkAutoLogin() { fetch('/api/me') .then(function(r) { return r.json(); }) .then(function(data) { if (data.loggedIn && data.isAdmin) { canAdmin = true; isAdmin = false; applyRole(); } else if (data.loggedIn && !data.isAdmin) { canAdmin = false; isAdmin = false; applyRole(); } }) .catch(function() { /* not logged in, keep default button */ }); })();
 
       // Fetch live Ramp budget data on page load
       window.addEventListener('load', function() {
