@@ -189,6 +189,44 @@ app.post('/api/events/refresh', ensureAdmin, (req, res) => {
   res.json({ message: 'Event refresh triggered' });
 });
 
+
+// ── Shared data store (replaces all localStorage) ──
+const DATA_DIR = path.join(__dirname, 'data');
+if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
+
+const ALLOWED_KEYS = ['suggestions', 'votes', 'pastEvents', 'sfEvents', 'volunteerEvents', 'teamEvents', 'snacks'];
+
+app.get('/api/store/:key', (req, res) => {
+  const key = req.params.key;
+  if (!ALLOWED_KEYS.includes(key)) return res.status(400).json({ error: 'Invalid key' });
+  try {
+    const fp = path.join(DATA_DIR, key + '.json');
+    if (!fs.existsSync(fp)) return res.json(null);
+    res.json(JSON.parse(fs.readFileSync(fp, 'utf8')));
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+app.post('/api/store/:key', (req, res) => {
+  const key = req.params.key;
+  if (!ALLOWED_KEYS.includes(key)) return res.status(400).json({ error: 'Invalid key' });
+  try {
+    const fp = path.join(DATA_DIR, key + '.json');
+    fs.writeFileSync(fp, JSON.stringify(req.body.data, null, 2));
+    res.json({ ok: true });
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+app.get('/api/store', (req, res) => {
+  try {
+    const result = {};
+    ALLOWED_KEYS.forEach(key => {
+      const fp = path.join(DATA_DIR, key + '.json');
+      result[key] = fs.existsSync(fp) ? JSON.parse(fs.readFileSync(fp, 'utf8')) : null;
+    });
+    res.json(result);
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
 // Static file serving
 app.use(express.static(__dirname));
 
