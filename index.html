@@ -2233,7 +2233,7 @@ requestAnimationFrame(() => {
 <script>
 // ========== ROLE SYSTEM ==========
 const FPPC_PASSWORD = 'fppc2026';
-let isAdmin = localStorage.getItem('fppc-role') === 'admin';
+let isAdmin = false; // set by auth system
 
 function applyRole() {
   if (isAdmin) {
@@ -2267,7 +2267,7 @@ function showLoginModal() {
         .then(function(r) { return r.json(); })
         .then(function(data) {
           if (data.loggedIn && data.isAdmin) {
-            localStorage.setItem('fppc-role', 'admin');
+            /* role set by auth */
             let isAdmin = true;
             // Update login button to show logged-in state
             const loginBtn = document.querySelector('.role-btn.employee');
@@ -2324,7 +2324,7 @@ function showLoginModal() {
 
 function logoutAdmin() {
   isAdmin = false;
-  localStorage.setItem('fppc-role', 'employee');
+  /* role set by auth */
   applyRole();
   renderAllGrids();
   if (typeof renderSuggestions === 'function') renderSuggestions();
@@ -2495,7 +2495,7 @@ function renderApprovedCard(s, index) {
 }
 
 // ========== PAST EVENTS ==========
-const pastEvents = JSON.parse(localStorage.getItem('fppc-pastEvents') || '[]');
+const pastEvents = [];
 
 function renderPastCard(event, index) {
   const typeClass = event.type || 'social';
@@ -2550,7 +2550,7 @@ function restorePastEvent(index) {
   delete event.archivedMonth;
   targetArray.push(event);
   saveCuratedEvents();
-  localStorage.setItem('fppc-pastEvents', JSON.stringify(pastEvents));
+  saveToServer('pastEvents', pastEvents);
   renderAllGrids();
   renderPastGrid();
   showToast('♻️ Event restored to active listings!');
@@ -2559,7 +2559,7 @@ function restorePastEvent(index) {
 function deletePastEvent(index) {
   if (confirm('Permanently delete this archived event?')) {
     pastEvents.splice(index, 1);
-    localStorage.setItem('fppc-pastEvents', JSON.stringify(pastEvents));
+    saveToServer('pastEvents', pastEvents);
     renderPastGrid();
   }
 }
@@ -2571,7 +2571,7 @@ function archiveEvent(arrayName, index) {
   event.archivedMonth = now.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
   pastEvents.unshift(event);
   saveCuratedEvents();
-  localStorage.setItem('fppc-pastEvents', JSON.stringify(pastEvents));
+  saveToServer('pastEvents', pastEvents);
   renderAllGrids();
   renderPastGrid();
   showToast('📁 Event archived!');
@@ -2610,9 +2610,9 @@ function renderAllGrids() {
 // Load any saved curated event edits before rendering
 try {
   const saved = {
-    sfEvents: localStorage.getItem('fppc-sfEvents'),
-    volunteerEvents: localStorage.getItem('fppc-volunteerEvents'),
-    teamEvents: localStorage.getItem('fppc-teamEvents'),
+    sfEvents: null, // loaded from server
+    volunteerEvents: null, // loaded from server
+    teamEvents: null, // loaded from server
   };
   if (saved.sfEvents) { sfEvents.length = 0; sfEvents.push(...JSON.parse(saved.sfEvents)); }
   if (saved.volunteerEvents) { volunteerEvents.length = 0; volunteerEvents.push(...JSON.parse(saved.volunteerEvents)); }
@@ -2620,12 +2620,12 @@ try {
 } catch(e) { console.warn('Failed to load saved events:', e); }
 
 // ========== SUGGESTIONS DATA (must load before renderAllGrids) ==========
-const suggestions = JSON.parse(localStorage.getItem('fppc-suggestions') || '[]');
+const suggestions = [];
 
 // ========== VOTE DATA (must load before renderAllGrids) ==========
 const SHEETS_API_URL = 'https://script.google.com/macros/s/AKfycbxNEBeCoGTDnx5iZhB7viVKkzOaEg6uxeZZjbCher53u1QV87YYtYm0W-RLJAqcl-IX/exec';
-const voteData = JSON.parse(localStorage.getItem('fppc-votes') || '{}');
-let currentVoterName = localStorage.getItem('fppc-voter-name') || '';
+const voteData = {};
+let currentVoterName = '';
 const VOTE_THRESHOLD = 4;
 let sheetsReady = false;
 
@@ -2649,13 +2649,13 @@ async function loadVotesFromSheets() {
       });
       // Also check for keys in local that aren't in sheets (stale local data)
       // Keep local keys that aren't in sheets for now (offline votes)
-      localStorage.setItem('fppc-votes', JSON.stringify(voteData));
+      saveToServer('votes', voteData);
       sheetsReady = true;
       renderAllGrids();
       try { renderSuggestions(); } catch(e) {}
     }
   } catch (err) {
-    console.warn('FPPC: Could not load votes from Google Sheets, using localStorage fallback.', err);
+    console.warn('FPPC: Could not load votes from Google Sheets, using server fallback.', err);
   }
 }
 
@@ -2735,7 +2735,7 @@ document.querySelectorAll('.pill').forEach(pill => {
 
 // ========== VOTING ==========
 function saveVotes() {
-  localStorage.setItem('fppc-votes', JSON.stringify(voteData));
+  saveToServer('votes', voteData);
   // Note: Google Sheets sync is done per-action in vote/unvote handlers via syncVoteToSheets()
 }
 
@@ -2781,7 +2781,7 @@ function confirmVoterName() {
   const name = input.value.trim();
   if (!name) { input.style.borderColor = 'var(--accent)'; return; }
   currentVoterName = name;
-  localStorage.setItem('fppc-voter-name', name);
+  currentVoterName = name;
   document.querySelector('.vote-name-prompt').remove();
   if (window._voteCallback) { window._voteCallback(name); window._voteCallback = null; }
 }
@@ -2844,11 +2844,11 @@ function exportVotesCSV() {
 // ========== CURATED EVENT MANAGEMENT (Admin only) ==========
 const eventArrays = { sfEvents, volunteerEvents, teamEvents };
 
-// Persist curated event edits in localStorage
+// Persist curated event edits to server
 function saveCuratedEvents() {
-  localStorage.setItem('fppc-sfEvents', JSON.stringify(sfEvents));
-  localStorage.setItem('fppc-volunteerEvents', JSON.stringify(volunteerEvents));
-  localStorage.setItem('fppc-teamEvents', JSON.stringify(teamEvents));
+  saveToServer('sfEvents', sfEvents);
+  saveToServer('volunteerEvents', volunteerEvents);
+  saveToServer('teamEvents', teamEvents);
 }
 
 // Load any saved curated event edits (already loaded before first renderAllGrids)
@@ -3355,7 +3355,7 @@ async function submitSuggestion(e) {
     s.cost = document.getElementById('s-cost').value;
     if (linkUrl) s.url = linkUrl;
     if (research) s.research = research;
-    localStorage.setItem('fppc-suggestions', JSON.stringify(suggestions));
+    saveToServer('suggestions', suggestions);
     editingIndex = -1;
     closeModal();
     showToast('✏️ Suggestion updated!');
@@ -3381,7 +3381,7 @@ async function submitSuggestion(e) {
   };
 
   suggestions.push(suggestion);
-  localStorage.setItem('fppc-suggestions', JSON.stringify(suggestions));
+  saveToServer('suggestions', suggestions);
   pendingSuggestionIndex = suggestions.length - 1; // track which one to enrich
 
   // If user already provided a link or we matched from the KB, skip search step
@@ -3534,7 +3534,7 @@ function approveSearchResult() {
     }
   }
 
-  localStorage.setItem('fppc-suggestions', JSON.stringify(suggestions));
+  saveToServer('suggestions', suggestions);
   showToast('🔗 Link attached to your suggestion!');
   closeSearchStep();
 }
@@ -3579,7 +3579,7 @@ function renderSuggestions() {
       }
     }
   }
-  if (updated) localStorage.setItem('fppc-suggestions', JSON.stringify(suggestions));
+  if (updated) saveToServer('suggestions', suggestions);
 
   // Fire off async web research for any still-unmatched suggestions (non-blocking)
   if (webSearchNeeded.length > 0) {
@@ -3594,16 +3594,16 @@ function renderSuggestions() {
           if (s.location === 'TBD' && result.address) s.location = result.address;
           if ((!s.description || s.description === 'No details provided. The mystery is part of the appeal.') && result.description) s.description = result.description;
         }
-        localStorage.setItem('fppc-suggestions', JSON.stringify(suggestions));
+        saveToServer('suggestions', suggestions);
         renderSuggestions();
       }).catch(() => {
         s.researching = false;
-        localStorage.setItem('fppc-suggestions', JSON.stringify(suggestions));
+        saveToServer('suggestions', suggestions);
         renderSuggestions();
       });
     });
     // Save the researching flag state
-    localStorage.setItem('fppc-suggestions', JSON.stringify(suggestions));
+    saveToServer('suggestions', suggestions);
   }
 
   const grid = document.getElementById('suggestions-grid');
@@ -3696,7 +3696,7 @@ function voteSuggestion(btn, index) {
     if (hasVoted(key, name)) {
       entry.voters = entry.voters.filter(v => v.toLowerCase() !== name.toLowerCase());
       suggestions[index].votes = entry.voters.length;
-      localStorage.setItem('fppc-suggestions', JSON.stringify(suggestions));
+      saveToServer('suggestions', suggestions);
       saveVotes();
       syncVoteToSheets('unvote', key, eventTitle, 'suggestion', name);
       renderSuggestions();
@@ -3704,7 +3704,7 @@ function voteSuggestion(btn, index) {
     }
     entry.voters.push(name);
     suggestions[index].votes = entry.voters.length;
-    localStorage.setItem('fppc-suggestions', JSON.stringify(suggestions));
+    saveToServer('suggestions', suggestions);
     saveVotes();
     syncVoteToSheets('vote', key, eventTitle, 'suggestion', name);
     renderSuggestions();
@@ -3733,7 +3733,7 @@ function voteApproved(btn, index) {
 
 function approveSuggestion(index) {
   suggestions[index].approved = true;
-  localStorage.setItem('fppc-suggestions', JSON.stringify(suggestions));
+  saveToServer('suggestions', suggestions);
   renderSuggestions();
   renderAllGrids(); // Add to main tab
   showToast('🎉 The committee has spoken. This event is APPROVED and promoted to the main board!');
@@ -3741,7 +3741,7 @@ function approveSuggestion(index) {
 
 function unapproveSuggestion(index) {
   suggestions[index].approved = false;
-  localStorage.setItem('fppc-suggestions', JSON.stringify(suggestions));
+  saveToServer('suggestions', suggestions);
   renderSuggestions();
   renderAllGrids(); // Remove from main tab
   showToast('↩️ Approval undone. Moved back to Suggestions.');
@@ -3750,7 +3750,7 @@ function unapproveSuggestion(index) {
 function deleteSuggestion(index) {
   if (confirm('Remove this suggestion? The committee has spoken.')) {
     suggestions.splice(index, 1);
-    localStorage.setItem('fppc-suggestions', JSON.stringify(suggestions));
+    saveToServer('suggestions', suggestions);
     renderSuggestions();
   }
 }
@@ -3774,10 +3774,10 @@ function deleteSuggestion(index) {
           link: s.url || null
         };
         targetArray.push(newEvent);
-        // Persist moved event to localStorage so it survives page reload
-        localStorage.setItem("fppc-" + arrayName, JSON.stringify(targetArray));
+        // Persist moved event to server
+        saveToServer(arrayName, targetArray);
         suggestions.splice(index, 1);
-        localStorage.setItem("fppc-suggestions", JSON.stringify(suggestions));
+        saveToServer('suggestions', suggestions);
         renderSuggestions();
         renderAllGrids();
         var tabNames = {sfEvents: "SF Events", volunteerEvents: "Volunteer", teamEvents: "Team Building"};
@@ -3804,7 +3804,7 @@ async function retryWebResearch(index) {
     s.researching = false;
     showToast('⚠️ Web search failed. Try manual links.');
   }
-  localStorage.setItem('fppc-suggestions', JSON.stringify(suggestions));
+  saveToServer('suggestions', suggestions);
   renderSuggestions();
 }
 
@@ -4092,8 +4092,8 @@ const defaultSnacks = [
   { name: 'Chomps', emoji: '🥩', voters: [] },
 ];
 
-let snacks = JSON.parse(localStorage.getItem('fppc-snacks') || 'null') || [...defaultSnacks];
-function saveSnacks() { localStorage.setItem('fppc-snacks', JSON.stringify(snacks)); }
+let snacks = [...defaultSnacks];
+function saveSnacks() { saveToServer('snacks', snacks); }
 
 function renderSnacks() {
   const grid = document.getElementById('snack-grid');
@@ -4104,7 +4104,7 @@ function renderSnacks() {
   // Sort by votes descending
   const sorted = snacks.map((s, i) => ({ ...s, _idx: i })).sort((a, b) => b.voters.length - a.voters.length);
 
-  const voterName = (localStorage.getItem('fppc-voter-name') || '').toLowerCase();
+  const voterName = currentVoterName.toLowerCase();
 
   grid.innerHTML = sorted.map(s => {
     const voted = voterName && s.voters.some(v => v.toLowerCase() === voterName);
