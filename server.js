@@ -196,7 +196,7 @@ if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
 
 const ALLOWED_KEYS = ['suggestions', 'votes', 'pastEvents', 'sfEvents', 'volunteerEvents', 'teamEvents', 'snacks'];
 
-app.get('/api/store/:key', (req, res) => {
+app.get('/api/store/:key', ensureAuth, (req, res) => {
   const key = req.params.key;
   if (!ALLOWED_KEYS.includes(key)) return res.status(400).json({ error: 'Invalid key' });
   try {
@@ -206,7 +206,7 @@ app.get('/api/store/:key', (req, res) => {
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
-app.post('/api/store/:key', (req, res) => {
+app.post('/api/store/:key', ensureAuth, (req, res) => {
   const key = req.params.key;
   if (!ALLOWED_KEYS.includes(key)) return res.status(400).json({ error: 'Invalid key' });
   try {
@@ -216,7 +216,7 @@ app.post('/api/store/:key', (req, res) => {
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
-app.get('/api/store', (req, res) => {
+app.get('/api/store', ensureAuth, (req, res) => {
   try {
     const result = {};
     ALLOWED_KEYS.forEach(key => {
@@ -225,6 +225,13 @@ app.get('/api/store', (req, res) => {
     });
     res.json(result);
   } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+
+// ── Auth gate: require login for all pages ──
+app.use((req, res, next) => {
+  if (req.isAuthenticated()) return next();
+  res.send(`<!DOCTYPE html><html><head><title>FPPC Dashboard</title><style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:#0f0f23;color:#e0e0e0;display:flex;justify-content:center;align-items:center;min-height:100vh}.login{text-align:center;padding:48px;background:#1a1a2e;border-radius:16px;box-shadow:0 8px 32px rgba(0,0,0,.4);max-width:400px}h1{font-size:28px;margin-bottom:8px;background:linear-gradient(135deg,#667eea,#764ba2);-webkit-background-clip:text;-webkit-text-fill-color:transparent}p{color:#888;margin-bottom:32px;font-size:14px}a{display:inline-block;padding:14px 32px;background:#4285f4;color:#fff;text-decoration:none;border-radius:8px;font-size:16px;font-weight:500;transition:background .2s}a:hover{background:#357ae8}</style></head><body><div class="login"><h1>FPPC Dashboard</h1><p>Sign in with your Fermat Commerce account</p><a href="/auth/google">Sign in with Google</a></div></body></html>`);
 });
 
 // Static file serving
