@@ -115,19 +115,8 @@ app.get('/api/me', (req, res) => {
   }
 });
 
-// Ramp budget data - persisted to file, updated via POST /api/ramp-budget
-const RAMP_FILE = path.join(DATA_DIR, 'ramp-budget.json');
-const DEFAULT_BUDGET = { limit: 1600, spent: 1591.08, remaining: 8.92, updatedAt: '2026-03-25' };
-function loadRampBudget() {
-  try {
-    if (fs.existsSync(RAMP_FILE)) return JSON.parse(fs.readFileSync(RAMP_FILE, 'utf8'));
-  } catch (e) { console.error('Error loading ramp budget:', e); }
-  return { ...DEFAULT_BUDGET };
-}
-function saveRampBudget(data) {
-  try { fs.writeFileSync(RAMP_FILE, JSON.stringify(data)); } catch (e) { console.error('Error saving ramp budget:', e); }
-}
-let rampBudget = loadRampBudget();
+// Ramp budget data - loaded from file after DATA_DIR is defined below
+let rampBudget = { limit: 1600, spent: 1591.08, remaining: 8.92, updatedAt: '2026-03-25' };
 
 // GET current budget
 app.get('/api/ramp-budget', (req, res) => {
@@ -200,6 +189,21 @@ app.post('/api/events/refresh', ensureAdmin, (req, res) => {
 // ── Shared data store (replaces all localStorage) ──
 const DATA_DIR = path.join(__dirname, 'data');
 if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
+
+// Ramp budget file persistence
+const RAMP_FILE = path.join(DATA_DIR, 'ramp-budget.json');
+function loadRampBudget() {
+  try {
+    if (fs.existsSync(RAMP_FILE)) return JSON.parse(fs.readFileSync(RAMP_FILE, 'utf8'));
+  } catch (e) { console.error('Error loading ramp budget:', e); }
+  return null;
+}
+function saveRampBudget(data) {
+  try { fs.writeFileSync(RAMP_FILE, JSON.stringify(data)); } catch (e) { console.error('Error saving ramp budget:', e); }
+}
+// Load persisted budget if available
+const savedBudget = loadRampBudget();
+if (savedBudget) rampBudget = savedBudget;
 
 const ALLOWED_KEYS = ['suggestions', 'votes', 'pastEvents', 'sfEvents', 'volunteerEvents', 'teamEvents', 'snacks'];
 
