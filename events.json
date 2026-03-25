@@ -3,7 +3,10 @@
     "id": "st-patricks-pub-crawl",
     "title": "St. Patrick's 3-Day Pub Crawl",
     "type": "social",
-    "tags": ["SOCIAL", "PAID"],
+    "tags": [
+      "SOCIAL",
+      "PAID"
+    ],
     "date": "Mar 13-17",
     "dateSort": "2026-03-13",
     "time": "Various",
@@ -11,13 +14,16 @@
     "cost": "$15",
     "description": "The FPPC unanimously approves this multi-bar expedition in green attire. Regional leadership commends the strategic hydration plan.",
     "url": "https://example.com/st-patricks-crawl",
-    "archived": true
+    "archived": false
   },
   {
     "id": "sf-chocolate-salon",
     "title": "SF Chocolate Salon & Festival",
     "type": "food",
-    "tags": ["FOOD", "PAID"],
+    "tags": [
+      "FOOD",
+      "PAID"
+    ],
     "date": "Mar 28",
     "dateSort": "2026-03-28",
     "time": "11 AM-5 PM",
@@ -25,13 +31,16 @@
     "cost": "$$",
     "description": "The chocolate committee's quarterly report indicates optimal cocoa representation. Budget allocations fully justified by samples.",
     "url": "https://example.com/chocolate-salon",
-    "archived": true
+    "archived": false
   },
   {
     "id": "renegade-craft-spring",
     "title": "Renegade Craft Spring Fair",
     "type": "social",
-    "tags": ["SOCIAL", "FREE"],
+    "tags": [
+      "SOCIAL",
+      "FREE"
+    ],
     "date": "Mar 28-29",
     "dateSort": "2026-03-28",
     "time": "10 AM-6 PM",
@@ -39,13 +48,34 @@
     "cost": "$5",
     "description": "Local artisans present handmade goods with approved rebel energy. The FPPC respects the commitment to creative absurdity.",
     "url": "https://example.com/renegade-craft",
-    "archived": true
+    "archived": false
+  },
+  {
+    "id": "castro-night-market",
+    "title": "Castro Night Market",
+    "type": "social",
+    "tags": [
+      "SOCIAL",
+      "FREE",
+      "FOOD"
+    ],
+    "date": "Every 3rd Friday (Mar-Sep)",
+    "dateSort": "2026-04-17",
+    "time": "5 PM-10 PM",
+    "location": "18th Street, Castro",
+    "cost": "Free",
+    "description": "Pedestrian takeover with food, drag, and local vendors receives unanimous FPPC nightlife certification. Street closure protocols officially approved.",
+    "url": "https://castronightmarket.com/",
+    "archived": false
   },
   {
     "id": "st-stupids-day-parade",
     "title": "St. Stupid's Day Parade",
     "type": "social",
-    "tags": ["SOCIAL", "FREE"],
+    "tags": [
+      "SOCIAL",
+      "FREE"
+    ],
     "date": "Apr 1",
     "dateSort": "2026-04-01",
     "time": "12 PM",
@@ -59,7 +89,11 @@
     "id": "easter-in-the-park",
     "title": "Easter in the Park",
     "type": "social",
-    "tags": ["SOCIAL", "FREE", "FAMILY"],
+    "tags": [
+      "SOCIAL",
+      "FREE",
+      "FAMILY"
+    ],
     "date": "Apr 5",
     "dateSort": "2026-04-05",
     "time": "10 AM-4 PM",
@@ -73,7 +107,10 @@
     "id": "international-ocean-film-fest",
     "title": "International Ocean Film Festival",
     "type": "social",
-    "tags": ["FILM", "PAID"],
+    "tags": [
+      "FILM",
+      "PAID"
+    ],
     "date": "Apr 10-12",
     "dateSort": "2026-04-10",
     "time": "Various",
@@ -87,7 +124,11 @@
     "id": "cherry-blossom-festival",
     "title": "Cherry Blossom Festival",
     "type": "social",
-    "tags": ["SOCIAL", "FREE", "CULTURAL"],
+    "tags": [
+      "SOCIAL",
+      "FREE",
+      "CULTURAL"
+    ],
     "date": "Apr 11-12 & 18-19",
     "dateSort": "2026-04-11",
     "time": "10 AM-5 PM",
@@ -101,7 +142,10 @@
     "id": "night-of-ideas",
     "title": "Night of Ideas",
     "type": "social",
-    "tags": ["SOCIAL", "FREE"],
+    "tags": [
+      "SOCIAL",
+      "FREE"
+    ],
     "date": "Apr 11",
     "dateSort": "2026-04-11",
     "time": "6 PM-10 PM",
@@ -115,7 +159,10 @@
     "id": "inner-sunset-flea-market",
     "title": "Inner Sunset Flea Market",
     "type": "social",
-    "tags": ["SHOPPING", "FREE"],
+    "tags": [
+      "SHOPPING",
+      "FREE"
+    ],
     "date": "Apr 12",
     "dateSort": "2026-04-12",
     "time": "9 AM-3 PM",
@@ -129,7 +176,10 @@
     "id": "startup-art-fair",
     "title": "Startup Art Fair",
     "type": "social",
-    "tags": ["ART", "PAID"],
+    "tags": [
+      "ART",
+      "PAID"
+    ],
     "date": "Apr 17-19",
     "dateSort": "2026-04-17",
     "time": "11 AM-6 PM",
@@ -143,7 +193,10 @@
     "id": "sf-climate-week",
     "title": "SF Climate Week",
     "type": "volunteer",
-    "tags": ["ENVIRONMENT", "FREE"],
+    "tags": [
+      "ENVIRONMENT",
+      "FREE"
+    ],
     "date": "Apr 18-26",
     "dateSort": "2026-04-18",
     "time": "Various",
@@ -157,7 +210,10 @@
     "id": "sf-cookbook-week",
     "title": "SF Cookbook Week",
     "type": "food",
-    "tags": ["FOOD", "PAID"],
+    "tags": [
+      "FOOD",
+      "PAID"
+    ],
     "date": "Apr 21-25",
     "dateSort": "2026-04-21",
     "time": "Various",
@@ -171,7 +227,11 @@
     "id": "dogfest",
     "title": "DogFest",
     "type": "social",
-    "tags": ["SOCIAL", "FREE", "PET-FRIENDLY"],
+    "tags": [
+      "SOCIAL",
+      "FREE",
+      "PET-FRIENDLY"
+    ],
     "date": "Apr 25",
     "dateSort": "2026-04-25",
     "time": "12 PM-5 PM",
@@ -185,7 +245,10 @@
     "id": "pickin-on-polk",
     "title": "Pickin' on the Polk",
     "type": "social",
-    "tags": ["MUSIC", "FREE"],
+    "tags": [
+      "MUSIC",
+      "FREE"
+    ],
     "date": "Apr 25",
     "dateSort": "2026-04-25",
     "time": "11 AM-6 PM",
@@ -199,7 +262,10 @@
     "id": "dutch-windmill-festival",
     "title": "Dutch Windmill Festival",
     "type": "social",
-    "tags": ["CULTURAL", "FREE"],
+    "tags": [
+      "CULTURAL",
+      "FREE"
+    ],
     "date": "Apr 25",
     "dateSort": "2026-04-25",
     "time": "12 PM-5 PM",
@@ -213,7 +279,10 @@
     "id": "opening-day-bay",
     "title": "Opening Day on the Bay",
     "type": "social",
-    "tags": ["SOCIAL", "FREE"],
+    "tags": [
+      "SOCIAL",
+      "FREE"
+    ],
     "date": "Apr 26",
     "dateSort": "2026-04-26",
     "time": "11 AM-5 PM",
@@ -227,7 +296,10 @@
     "id": "sfmoma-discounted-admission",
     "title": "SFMOMA Discounted Admission",
     "type": "social",
-    "tags": ["ART", "PAID"],
+    "tags": [
+      "ART",
+      "PAID"
+    ],
     "date": "Through Apr 17",
     "dateSort": "2026-04-17",
     "time": "10 AM-5 PM",
@@ -241,7 +313,10 @@
     "id": "illuminate-live-outdoor",
     "title": "Illuminate LIVE Outdoor Concerts",
     "type": "social",
-    "tags": ["MUSIC", "FREE"],
+    "tags": [
+      "MUSIC",
+      "FREE"
+    ],
     "date": "Every Sunday",
     "dateSort": "2026-04-05",
     "time": "4 PM-7:30 PM",
@@ -255,7 +330,10 @@
     "id": "rush-hour-comedy-night",
     "title": "Rush Hour Comedy Night",
     "type": "social",
-    "tags": ["SOCIAL", "FREE"],
+    "tags": [
+      "SOCIAL",
+      "FREE"
+    ],
     "date": "Every Friday",
     "dateSort": "2026-04-03",
     "time": "7 PM-10 PM",
@@ -269,7 +347,10 @@
     "id": "dollar-drink-fridays-monroe",
     "title": "$1 Drink Fridays at Monroe",
     "type": "social",
-    "tags": ["SOCIAL", "PAID"],
+    "tags": [
+      "SOCIAL",
+      "PAID"
+    ],
     "date": "Every Friday",
     "dateSort": "2026-04-03",
     "time": "5 PM-10 PM",
@@ -277,6 +358,130 @@
     "cost": "$1",
     "description": "Budget-conscious libations approved by fiscal committee. Regional leadership confirms value-conscious hydration strategies.",
     "url": "https://example.com/monroe-fridays",
+    "archived": false
+  },
+  {
+    "id": "cinco-de-mayo-festival",
+    "title": "Cinco de Mayo Festival",
+    "type": "social",
+    "tags": [
+      "CULTURAL",
+      "FREE",
+      "FAMILY"
+    ],
+    "date": "May 2",
+    "dateSort": "2026-05-02",
+    "time": "10 AM-6 PM",
+    "location": "Valencia St (21st-24th), Mission",
+    "cost": "Free",
+    "description": "Family-friendly street celebration receives full cultural affairs committee endorsement. The FPPC salutes the festive programming allocation on Valencia.",
+    "url": "https://www.sanfranciscobay.com/events/cinco-de-mayo/",
+    "archived": false
+  },
+  {
+    "id": "uncorked-wine-festival",
+    "title": "Uncorked! Wine Festival",
+    "type": "food",
+    "tags": [
+      "FOOD",
+      "PAID"
+    ],
+    "date": "May 9",
+    "dateSort": "2026-05-09",
+    "time": "12 PM-5 PM",
+    "location": "Ghirardelli Square, Fisherman's Wharf",
+    "cost": "$$",
+    "description": "The 13th annual wine-tasting experience receives sommelier committee certification. Tasting notes and fiscal responsibility coexist beautifully.",
+    "url": "https://crawlsf.com/events/uncorked-san-francisco-wine-festival/",
+    "archived": false
+  },
+  {
+    "id": "bay-to-breakers",
+    "title": "Bay to Breakers",
+    "type": "social",
+    "tags": [
+      "SOCIAL",
+      "PAID",
+      "FITNESS"
+    ],
+    "date": "May 17",
+    "dateSort": "2026-05-17",
+    "time": "8 AM",
+    "location": "Bay to Ocean Beach, citywide",
+    "cost": "$$",
+    "description": "70,000 costumed runners traverse the city in organized chaos since 1912. The FPPC unanimously certifies this as peak San Francisco cardio absurdity.",
+    "url": "https://www.baytobreakers.com/",
+    "archived": false
+  },
+  {
+    "id": "yerba-buena-gardens-festival",
+    "title": "Yerba Buena Gardens Festival",
+    "type": "social",
+    "tags": [
+      "MUSIC",
+      "FREE",
+      "CULTURAL"
+    ],
+    "date": "May-Oct (Weekends)",
+    "dateSort": "2026-05-17",
+    "time": "Various",
+    "location": "Yerba Buena Gardens, SoMa",
+    "cost": "Free",
+    "description": "75+ free outdoor arts programs from May through October. The committee approves this sustained cultural investment with perpetual enthusiasm.",
+    "url": "https://ybgfestival.org/",
+    "archived": false
+  },
+  {
+    "id": "carnaval-sf",
+    "title": "Carnaval San Francisco",
+    "type": "social",
+    "tags": [
+      "CULTURAL",
+      "FREE",
+      "MUSIC"
+    ],
+    "date": "May 23-24",
+    "dateSort": "2026-05-23",
+    "time": "11 AM-6 PM",
+    "location": "Harrison St (16th-24th), Mission",
+    "cost": "Free",
+    "description": "17-block festival with samba, five stages, and a Grand Parade on Sunday. The FPPC declares this the largest approved rhythmic celebration in the city.",
+    "url": "https://carnavalsanfrancisco.org/",
+    "archived": false
+  },
+  {
+    "id": "aapi-cocktail-week",
+    "title": "SF AAPI Cocktail Week",
+    "type": "food",
+    "tags": [
+      "FOOD",
+      "CULTURAL",
+      "PAID"
+    ],
+    "date": "May 24-25",
+    "dateSort": "2026-05-24",
+    "time": "Various",
+    "location": "Various Bars, throughout SF",
+    "cost": "$$",
+    "description": "Fourth annual celebration of AAPI mixology talent. The beverage committee certifies this as a culturally enriching hydration initiative.",
+    "url": "https://example.com/aapi-cocktail-week",
+    "archived": false
+  },
+  {
+    "id": "sf-docfest",
+    "title": "SF DocFest",
+    "type": "social",
+    "tags": [
+      "FILM",
+      "PAID"
+    ],
+    "date": "May 28-Jun 7",
+    "dateSort": "2026-05-28",
+    "time": "Various",
+    "location": "Roxie Theater, Mission",
+    "cost": "$$",
+    "description": "The 25th documentary festival receives archival committee approval. Regional leadership commends the nonfiction storytelling allocation.",
+    "url": "https://sfindie.com/",
     "archived": false
   }
 ]
