@@ -115,6 +115,33 @@ app.get('/api/me', (req, res) => {
   }
 });
 
+// Ramp budget data - updated via POST /api/ramp-budget
+let rampBudget = {
+  limit: 1600,
+  spent: 1558.59,
+  remaining: 41.41,
+  updatedAt: '2026-03-25'
+};
+
+// GET current budget
+app.get('/api/ramp-budget', (req, res) => {
+  res.json(rampBudget);
+});
+
+// POST to update budget (requires secret key)
+app.post('/api/ramp-budget', express.json(), (req, res) => {
+  const key = req.headers['x-api-key'] || req.body.key;
+  if (key !== (process.env.RAMP_UPDATE_KEY || 'fppc-update-2026')) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+  const { limit, spent, remaining } = req.body;
+  if (spent !== undefined) rampBudget.spent = Number(spent);
+  if (limit !== undefined) rampBudget.limit = Number(limit);
+  if (remaining !== undefined) rampBudget.remaining = Number(remaining);
+  rampBudget.updatedAt = new Date().toISOString().split('T')[0];
+  res.json(rampBudget);
+});
+
 app.get('/api/user', ensureAuth, (req, res) => {
   res.json({
     email: req.user.email,
