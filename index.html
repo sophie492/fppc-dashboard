@@ -2290,6 +2290,38 @@ function showLoginModal() {
         .catch(function() { /* not logged in, keep default button */ });
     })();
 
+      // Fetch live Ramp budget data on page load
+      (function loadRampBudget() {
+        fetch('/api/ramp-budget')
+          .then(function(r) { return r.json(); })
+          .then(function(data) {
+            var cards = document.querySelectorAll('.stat-card');
+            var budgetCard = null;
+            cards.forEach(function(card) {
+              if (card.textContent.indexOf('Social Budget') !== -1) budgetCard = card;
+            });
+            if (!budgetCard) return;
+
+            var numberEl = budgetCard.querySelector('.number');
+            if (numberEl) numberEl.textContent = '$' + Math.round(data.remaining);
+
+            var barFill = budgetCard.querySelector('.budget-bar-fill');
+            if (barFill) {
+              var pct = (data.spent / data.limit) * 100;
+              barFill.style.width = pct.toFixed(1) + '%';
+            }
+
+            var detail = budgetCard.querySelector('.budget-detail');
+            if (detail) {
+              var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+              var d = new Date(data.updatedAt);
+              var dateStr = months[d.getMonth()] + ' ' + d.getDate();
+              detail.textContent = '$' + data.spent.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2}) + ' of $' + data.limit.toLocaleString() + ' spent \u00B7 Updated ' + dateStr;
+            }
+          })
+          .catch(function() { /* keep static values */ });
+      })();
+
 function logoutAdmin() {
   isAdmin = false;
   localStorage.setItem('fppc-role', 'employee');
