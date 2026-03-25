@@ -2459,10 +2459,39 @@ function renderApprovedCard(s, index) {
   `;
 }
 
-function renderGrid(gridId, events, arrayName) {
+// Filter out past events based on their date string
+  function isEventPast(dateStr) {
+    if (!dateStr) return false;
+    if (/every|ongoing|anytime|walk-in|book/i.test(dateStr)) return false;
+    var mo = {Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};
+    var today = new Date(); today.setHours(0,0,0,0);
+    var parts = dateStr.split(/[\u2013\u2014\-]/); // split on en-dash, em-dash, hyphen
+    var lastPart = parts[parts.length - 1].trim();
+    var lastMonth = null, lastDay = null;
+    var mm = lastPart.match(/\b(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\b/);
+    if (mm) {
+      lastMonth = mo[mm[1]];
+      var after = lastPart.substring(lastPart.indexOf(mm[1]) + mm[1].length);
+      var dd = after.match(/\d+/);
+      if (dd) lastDay = parseInt(dd[0]);
+    } else {
+      var dd = lastPart.match(/\d+/);
+      if (dd) lastDay = parseInt(dd[0]);
+      for (var i = parts.length - 2; i >= 0; i--) {
+        var m = parts[i].match(/\b(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\b/);
+        if (m) { lastMonth = mo[m[1]]; break; }
+      }
+    }
+    if (lastMonth === null || lastDay === null) return false;
+    var yr = 2026; var ym = dateStr.match(/\b(202\d)\b/); if (ym) yr = parseInt(ym[1]);
+    var endDate = new Date(yr, lastMonth, lastDay + 1); // day after event ends
+    return endDate <= today;
+  }
+
+  function renderGrid(gridId, events, arrayName) {
   const addBtn = `<div class="add-event-btn admin-only-block" onclick="addCuratedEvent('${arrayName}')">+ Add New Event</div>`;
   document.getElementById(gridId).innerHTML =
-    events.map((e, i) => renderCard(e, arrayName, i)).join('') + addBtn;
+    events.map((e, i) => isEventPast(e.date) ? '' : renderCard(e, arrayName, i)).join('') + addBtn;
 }
 
 // ========== PAST EVENTS ==========
@@ -2552,6 +2581,10 @@ function renderAllGrids() {
   renderGrid('events-grid', sfEvents, 'sfEvents');
   renderGrid('volunteer-grid', volunteerEvents, 'volunteerEvents');
   renderGrid('team-grid', teamEvents, 'teamEvents');
+      // Update upcoming events count to exclude past events
+      var upcomingCount = [sfEvents, volunteerEvents, teamEvents].reduce(function(sum, arr) { return sum + arr.filter(function(e) { return !isEventPast(e.date); }).length; }, 0);
+      var statCards = document.querySelectorAll('.stat-card');
+      statCards.forEach(function(card) { if (card.textContent.indexOf('Upcoming Events') !== -1) { var numEl = card.querySelector('.number'); if (numEl) numEl.textContent = upcomingCount; } });
 
   // Inject approved suggestions into the appropriate main grids
   if (typeof suggestions !== 'undefined') {
