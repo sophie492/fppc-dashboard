@@ -1697,19 +1697,12 @@
 </div>
 
 <!-- FPPC Login Modal -->
-<div class="modal-overlay" id="login-modal">
-  <div class="modal" style="max-width:380px;">
-    <button class="modal-close" onclick="document.getElementById('login-modal').classList.remove('open')">✕</button>
-    <h2>🔐 FPPC Admin Login</h2>
-    <p class="subtitle">Enter the committee password to access admin tools.</p>
-    <div class="form-group">
-      <label>Password</label>
-      <input type="password" id="fppc-password" placeholder="Enter password" style="width:100%;" onkeydown="if(event.key==='Enter')attemptLogin()">
+<div id="login-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:10000; display:flex; align-items:center; justify-content:center;">
+      <div style="background:white; padding:2rem; border-radius:12px; text-align:center; max-width:400px;">
+        <h3>Redirecting to Google Sign-In...</h3>
+        <p>If you are not redirected, <a href="/auth/google">click here</a>.</p>
+      </div>
     </div>
-    <div id="login-error" style="color:var(--cherry);font-size:12px;margin-top:4px;display:none;">Incorrect password. Please try again.</div>
-    <button class="submit-btn" style="margin-top:12px;" onclick="attemptLogin()">Log In</button>
-  </div>
-</div>
 
 <!-- Scrolling quotes -->
 <div class="marquee-wrap">
@@ -2256,34 +2249,46 @@ function renderRoleBadge() {
   if (isAdmin) {
     container.innerHTML = `<button class="role-btn fppc-admin" onclick="logoutAdmin()">🎉 FPPC Member · Log Out</button>`;
   } else {
-    container.innerHTML = `<button class="role-btn employee" onclick="showLoginModal()">🔒 Employee View · FPPC Login</button>`;
+    container.innerHTML = `<button class="role-btn employee" onclick="window.location.href='/auth/google'">🔒 Employee View · Sign in with Google</button>`;
   }
 }
 
 function showLoginModal() {
-  document.getElementById('login-modal').classList.add('open');
-  document.getElementById('login-error').style.display = 'none';
-  document.getElementById('fppc-password').value = '';
-  setTimeout(() => document.getElementById('fppc-password').focus(), 200);
-}
+      window.location.href = '/auth/google';
+    }
 
-function attemptLogin() {
-  const pw = document.getElementById('fppc-password').value;
-  if (pw === FPPC_PASSWORD) {
-    isAdmin = true;
-    localStorage.setItem('fppc-role', 'admin');
-    document.getElementById('login-modal').classList.remove('open');
-    applyRole();
-    renderAllGrids();
-    if (typeof renderSuggestions === 'function') renderSuggestions();
-    if (typeof renderHHList === 'function') renderHHList();
-    showToast('🎉 Welcome to the committee. Use your power wisely.');
-  } else {
-    document.getElementById('login-error').style.display = 'block';
-    document.getElementById('fppc-password').value = '';
-    document.getElementById('fppc-password').focus();
-  }
-}
+    function attemptLogin() {
+      window.location.href = '/auth/google';
+    }
+
+    // Auto-login: check if user is authenticated via Google OAuth
+    (function checkAutoLogin() {
+      fetch('/api/me')
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          if (data.loggedIn && data.isAdmin) {
+            localStorage.setItem('fppc-role', 'admin');
+            let isAdmin = true;
+            // Update login button to show logged-in state
+            const loginBtn = document.querySelector('.role-btn.employee');
+            if (loginBtn) {
+              loginBtn.textContent = '✅ Logged in as ' + data.name;
+              loginBtn.onclick = function() { window.location.href = '/auth/logout'; };
+            }
+            // Show admin-only elements
+            document.querySelectorAll('.admin-only').forEach(function(el) {
+              el.style.display = '';
+            });
+          } else if (data.loggedIn && !data.isAdmin) {
+            const loginBtn = document.querySelector('.role-btn.employee');
+            if (loginBtn) {
+              loginBtn.textContent = '👤 ' + data.name + ' (View Only)';
+              loginBtn.onclick = function() { window.location.href = '/auth/logout'; };
+            }
+          }
+        })
+        .catch(function() { /* not logged in, keep default button */ });
+    })();
 
 function logoutAdmin() {
   isAdmin = false;
