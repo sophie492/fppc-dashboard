@@ -2621,7 +2621,7 @@ function renderBudget() {
   const spentPct = ((RAMP_BUDGET.spent / RAMP_BUDGET.limit) * 100).toFixed(0);
   document.getElementById('budget-remaining').textContent = '$' + RAMP_BUDGET.remaining.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 0});
   const bar = document.getElementById('budget-bar-fill');
-  bar.style.width = pct + '%';
+  bar.style.width = spentPct + '%';
   // Color: green if >50%, ochre if 25-50%, red if <25%
   if (pct > 50) bar.style.background = 'var(--forest)';
   else if (pct > 25) bar.style.background = 'var(--ochre)';
