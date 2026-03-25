@@ -1707,78 +1707,60 @@
 <!-- Scrolling quotes -->
 <div class="marquee-wrap">
   <div class="marquee-track" id="marquee-track">
-    <div class="marquee-set">
-      <span>🏹 "So are we making a partiful for this archery thing?" — Rangaraj, #fppc</span>
-      <span>🔥 "This got serious" — Rangaraj, seeing the FPPC channel for the first time</span>
-      <span>😈 "If the office is going to descend into anarchy I might as well enjoy it" — Josh, #hub-sf</span>
-      <span>🍽️ "Lunch as a human construct — yes. Lunch as a fermat social event — no." — Bharat, #hub-sf</span>
-      <span>🧊 "We have struck a deal with Evelyn. 70% attendance or no ice machine." — Grace, #hub-sf</span>
-      <span>🎉 "It was formed because people were having fun wrong." — Sophie, founding the FPPC</span>
-      <span>🐕 "Does anyone feel strongly about me bringing beanie in tomorrow?" — Alec, #hub-sf</span>
-      <span>🍔 "The friskiest part of today's frisky lunch friday is that Jules will be joining us." — Josh, #hub-sf</span>
-      <span>☕ "Does anyone want to get an espresso and a metaphorical cigarette with me?" — Ranjit, #hub-sf</span>
-      <span>🤖 "While you're hilarious, you have largely been a net negative on office productivity." — Shreyas to Big Dog</span>
-      <span>💀 "When are we doing the goodbye office happy hour?" — Ranjit, asking the real questions</span>
-      <span>🎶 "This music should be played in a soulcycle class" — Sophie, #hub-sf</span>
-    </div>
-    <div class="marquee-set" aria-hidden="true">
-      <span>🏹 "So are we making a partiful for this archery thing?" — Rangaraj, #fppc</span>
-      <span>🔥 "This got serious" — Rangaraj, seeing the FPPC channel for the first time</span>
-      <span>😈 "If the office is going to descend into anarchy I might as well enjoy it" — Josh, #hub-sf</span>
-      <span>🍽️ "Lunch as a human construct — yes. Lunch as a fermat social event — no." — Bharat, #hub-sf</span>
-      <span>🧊 "We have struck a deal with Evelyn. 70% attendance or no ice machine." — Grace, #hub-sf</span>
-      <span>🎉 "It was formed because people were having fun wrong." — Sophie, founding the FPPC</span>
-      <span>🐕 "Does anyone feel strongly about me bringing beanie in tomorrow?" — Alec, #hub-sf</span>
-      <span>🍔 "The friskiest part of today's frisky lunch friday is that Jules will be joining us." — Josh, #hub-sf</span>
-      <span>☕ "Does anyone want to get an espresso and a metaphorical cigarette with me?" — Ranjit, #hub-sf</span>
-      <span>🤖 "While you're hilarious, you have largely been a net negative on office productivity." — Shreyas to Big Dog</span>
-      <span>💀 "When are we doing the goodbye office happy hour?" — Ranjit, asking the real questions</span>
-      <span>🎶 "This music should be played in a soulcycle class" — Sophie, #hub-sf</span>
-    </div>
+    <div class="marquee-set" id="marquee-set-1"></div>
+    <div class="marquee-set" id="marquee-set-2" aria-hidden="true"></div>
   </div>
 </div>
 <script>
-// ===== SERVER-SIDE DATA PERSISTENCE =====
-function saveToServer(key, data) {
-  fetch('/api/store/' + key, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ data: data })
-  }).catch(function(err) { console.warn('Server save failed:', err); });
+// Default quotes — used as fallback if server has none
+var defaultQuotes = [
+  {emoji: "🏹", text: "So are we making a partiful for this archery thing?", author: "Rangaraj, #fppc"},
+  {emoji: "🔥", text: "This got serious", author: "Rangaraj, seeing the FPPC channel for the first time"},
+  {emoji: "😈", text: "If the office is going to descend into anarchy I might as well enjoy it", author: "Josh, #hub-sf"},
+  {emoji: "🍽️", text: "Lunch as a human construct — yes. Lunch as a fermat social event — no.", author: "Bharat, #hub-sf"},
+  {emoji: "🧊", text: "We have struck a deal with Evelyn. 70% attendance or no ice machine.", author: "Grace, #hub-sf"},
+  {emoji: "🎉", text: "It was formed because people were having fun wrong.", author: "Sophie, founding the FPPC"},
+  {emoji: "🐕", text: "Does anyone feel strongly about me bringing beanie in tomorrow?", author: "Alec, #hub-sf"},
+  {emoji: "🍔", text: "The friskiest part of today's frisky lunch friday is that Jules will be joining us.", author: "Josh, #hub-sf"},
+  {emoji: "☕", text: "Does anyone want to get an espresso and a metaphorical cigarette with me?", author: "Ranjit, #hub-sf"},
+  {emoji: "🤖", text: "While you're hilarious, you have largely been a net negative on office productivity.", author: "Shreyas to Big Dog"},
+  {emoji: "💀", text: "When are we doing the goodbye office happy hour?", author: "Ranjit, asking the real questions"},
+  {emoji: "🎶", text: "This music should be played in a soulcycle class", author: "Sophie, #hub-sf"}
+];
+
+function renderMarquee(quotes) {
+  var html = '';
+  quotes.forEach(function(q) {
+    html += '<span>' + q.emoji + ' \u201c' + q.text + '\u201d \u2014 ' + q.author + '</span>';
+  });
+  document.getElementById('marquee-set-1').innerHTML = html;
+  document.getElementById('marquee-set-2').innerHTML = html;
+  // Set speed based on content width
+  requestAnimationFrame(function() {
+    var track = document.getElementById('marquee-track');
+    var set = document.getElementById('marquee-set-1');
+    if (set) {
+      var setWidth = set.offsetWidth;
+      var pxPerSec = 40;
+      var duration = setWidth / pxPerSec;
+      track.style.animationDuration = duration + 's';
+    }
+  });
 }
 
-async function loadFromServer() {
-  try {
-    var resp = await fetch('/api/store');
-    var data = await resp.json();
-    if (data.suggestions) { suggestions.length = 0; suggestions.push.apply(suggestions, data.suggestions); }
-    if (data.votes) { Object.keys(data.votes).forEach(function(k) { voteData[k] = data.votes[k]; }); }
-    if (data.pastEvents) { pastEvents.length = 0; pastEvents.push.apply(pastEvents, data.pastEvents); }
-    if (data.sfEvents) { sfEvents.length = 0; sfEvents.push.apply(sfEvents, data.sfEvents); }
-    if (data.volunteerEvents) { volunteerEvents.length = 0; volunteerEvents.push.apply(volunteerEvents, data.volunteerEvents); }
-    if (data.teamEvents) { teamEvents.length = 0; teamEvents.push.apply(teamEvents, data.teamEvents); }
-    if (data.snacks) { snacks.length = 0; snacks.push.apply(snacks, data.snacks); }
-    if (typeof renderAllGrids === 'function') renderAllGrids();
-    if (typeof renderSnacks === 'function') renderSnacks();
-    if (typeof renderPastEvents === 'function') renderPastEvents();
-    if (typeof drawWheel === 'function') drawWheel();
-    if (typeof renderHHList === 'function') renderHHList();
-  } catch(err) {
-    console.warn('Failed to load from server:', err);
-  }
-}
-
-// Set marquee speed based on actual content width for perfectly seamless loop
-requestAnimationFrame(() => {
-  const track = document.getElementById('marquee-track');
-  const set = track.querySelector('.marquee-set');
-  if (set) {
-    const setWidth = set.offsetWidth;
-    const pxPerSec = 40; // pixels per second — adjust for speed
-    const duration = setWidth / pxPerSec;
-    track.style.animationDuration = duration + 's';
-  }
-});
+// Load quotes from server, fall back to defaults
+fetch('/api/quotes')
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    if (data && Array.isArray(data) && data.length > 0) {
+      renderMarquee(data);
+    } else {
+      renderMarquee(defaultQuotes);
+    }
+  })
+  .catch(function() {
+    renderMarquee(defaultQuotes);
+  });
 </script>
 
 <!-- Tabs -->
