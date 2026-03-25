@@ -2291,7 +2291,7 @@ function showLoginModal() {
     })();
 
       // Fetch live Ramp budget data on page load
-      document.addEventListener('DOMContentLoaded', function() {
+      window.addEventListener('load', function() {
         fetch('/api/ramp-budget')
           .then(function(r) { return r.json(); })
           .then(function(data) {
@@ -2320,6 +2320,7 @@ function showLoginModal() {
             }
           })
           .catch(function() { /* keep static values */ });
+      });
       });
 
 function logoutAdmin() {
