@@ -3,6 +3,7 @@ const session = require('express-session');
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const path = require('path');
+const fs = require('fs');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -181,6 +182,12 @@ app.get('*', (req, res) => {
 // ---------------------------------------------------------------------------
 // Start
 // ---------------------------------------------------------------------------
+const indexPath = path.join(__dirname, 'index.html');
+if (!fs.existsSync(indexPath)) {
+  console.error('FATAL: index.html not found at', indexPath);
+    process.exit(1);
+    }
+    
 app.listen(PORT, () => {
   console.log(`FPPC Dashboard running on port ${PORT}`);
 });
