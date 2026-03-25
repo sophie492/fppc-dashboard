@@ -3775,6 +3775,8 @@ function deleteSuggestion(index) {
           link: s.url || null
         };
         targetArray.push(newEvent);
+        // Persist moved event to localStorage so it survives page reload
+        localStorage.setItem("fppc-" + arrayName, JSON.stringify(targetArray));
         suggestions.splice(index, 1);
         localStorage.setItem("fppc-suggestions", JSON.stringify(suggestions));
         renderSuggestions();
