@@ -710,7 +710,6 @@
         renderUpcoming();
         renderArchive();
         updateArchiveCount();
-        updateDateLabel();
       }).catch(function(e) {
         if (e.message === 'auth') return;
         console.error('Error loading events:', e);
@@ -863,24 +862,12 @@
     }
 
     function updateDateLabel() {
+      var now = new Date();
       var months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-      var events = currentEvents.length > 0 ? currentEvents : [];
-      if (events.length > 0) {
-        var dates = events.map(function(e) { return e.dateSort || ''; }).filter(Boolean).sort();
-        var first = new Date(dates[0] + 'T00:00:00');
-        var last = new Date(dates[dates.length - 1] + 'T00:00:00');
-        var m1 = months[first.getMonth()];
-        var m2 = months[last.getMonth()];
-        var yr = first.getFullYear();
-        var label = m1 === m2 ? m1 + ' ' + yr : m1 + '\u2013' + m2 + ' ' + yr;
-        document.getElementById('date-range-label').textContent = label + ' \u00B7 San Francisco';
-      } else {
-        var now = new Date();
-        var m1 = months[now.getMonth()];
-        var m2 = months[(now.getMonth() + 1) % 12];
-        var yr = now.getFullYear();
-        document.getElementById('date-range-label').textContent = m1 + '\u2013' + m2 + ' ' + yr + ' \u00B7 San Francisco';
-      }
+      var m1 = months[now.getMonth()];
+      var m2 = months[(now.getMonth() + 1) % 12];
+      var yr = now.getFullYear();
+      document.getElementById('date-range-label').textContent = m1 + '\u2013' + m2 + ' ' + yr + ' \u00B7 San Francisco';
     }
 
     function updateArchiveCount() {
