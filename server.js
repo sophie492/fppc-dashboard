@@ -107,6 +107,14 @@ function ensureAdmin(req, res, next) {
 }
 
 // API Routes
+app.get('/api/me', (req, res) => {
+  if (req.isAuthenticated && req.isAuthenticated()) {
+    res.json({ loggedIn: true, email: req.user.email, name: req.user.displayName, isAdmin: ADMIN_EMAILS.includes(req.user.email) });
+  } else {
+    res.json({ loggedIn: false });
+  }
+});
+
 app.get('/api/user', ensureAuth, (req, res) => {
   res.json({
     email: req.user.email,
