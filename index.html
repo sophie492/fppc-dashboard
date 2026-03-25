@@ -1738,6 +1738,36 @@
   </div>
 </div>
 <script>
+// ===== SERVER-SIDE DATA PERSISTENCE =====
+function saveToServer(key, data) {
+  fetch('/api/store/' + key, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ data: data })
+  }).catch(function(err) { console.warn('Server save failed:', err); });
+}
+
+async function loadFromServer() {
+  try {
+    var resp = await fetch('/api/store');
+    var data = await resp.json();
+    if (data.suggestions) { suggestions.length = 0; suggestions.push.apply(suggestions, data.suggestions); }
+    if (data.votes) { Object.keys(data.votes).forEach(function(k) { voteData[k] = data.votes[k]; }); }
+    if (data.pastEvents) { pastEvents.length = 0; pastEvents.push.apply(pastEvents, data.pastEvents); }
+    if (data.sfEvents) { sfEvents.length = 0; sfEvents.push.apply(sfEvents, data.sfEvents); }
+    if (data.volunteerEvents) { volunteerEvents.length = 0; volunteerEvents.push.apply(volunteerEvents, data.volunteerEvents); }
+    if (data.teamEvents) { teamEvents.length = 0; teamEvents.push.apply(teamEvents, data.teamEvents); }
+    if (data.snacks) { snacks.length = 0; snacks.push.apply(snacks, data.snacks); }
+    if (typeof renderAllGrids === 'function') renderAllGrids();
+    if (typeof renderSnacks === 'function') renderSnacks();
+    if (typeof renderPastEvents === 'function') renderPastEvents();
+    if (typeof drawWheel === 'function') drawWheel();
+    if (typeof renderHHList === 'function') renderHHList();
+  } catch(err) {
+    console.warn('Failed to load from server:', err);
+  }
+}
+
 // Set marquee speed based on actual content width for perfectly seamless loop
 requestAnimationFrame(() => {
   const track = document.getElementById('marquee-track');
@@ -4439,6 +4469,9 @@ try { renderAllGrids(); } catch(e) { console.warn('renderAllGrids init error:', 
 try { renderPastGrid(); } catch(e) { console.warn('renderPastGrid init error:', e); }
 try { renderCalendar(); } catch(e) { console.warn('renderCalendar init error:', e); }
 
+
+// Load shared data from server on page load
+loadFromServer();
 </script>
 
 <!-- Calendar Event Popup -->
