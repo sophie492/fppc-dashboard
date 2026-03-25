@@ -710,6 +710,7 @@
         renderUpcoming();
         renderArchive();
         updateArchiveCount();
+        updateDateLabel();
       }).catch(function(e) {
         if (e.message === 'auth') return;
         console.error('Error loading events:', e);
