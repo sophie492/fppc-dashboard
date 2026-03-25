@@ -3831,8 +3831,8 @@ const defaultHHSpots = [
   { name: "Golden Eye Social", area: "SoMa", why: "6500 sq ft art deco space, two bars, craft cocktails & games", link: "", naGuinness: null },
 ];
 
-let hhSpots = JSON.parse(localStorage.getItem('fppc-hh-spots') || 'null') || [...defaultHHSpots];
-function saveHHSpots() { localStorage.setItem('fppc-hh-spots', JSON.stringify(hhSpots)); }
+let hhSpots = [...defaultHHSpots];
+function saveHHSpots() { /* no-op */ }
 
 // Wheel color palette (Fermat-inspired)
 const wheelColors = [
