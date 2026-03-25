@@ -2663,7 +2663,7 @@ function renderBudget() {
   if (pct > 50) bar.style.background = 'var(--forest)';
   else if (pct > 25) bar.style.background = 'var(--ochre)';
   else bar.style.background = 'var(--cherry)';
-  const updated = new Date(RAMP_BUDGET.lastUpdated).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  const _dp = RAMP_BUDGET.lastUpdated.split('-'); const _mn = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']; const updated = _mn[parseInt(_dp[1],10)-1] + ' ' + parseInt(_dp[2],10);
   document.getElementById('budget-detail').textContent = '$' + RAMP_BUDGET.spent.toLocaleString() + ' of $' + RAMP_BUDGET.limit.toLocaleString() + ' spent · Updated ' + updated;
 }
 setTimeout(renderBudget, 300); // slight delay for bar animation on load
