@@ -2314,8 +2314,8 @@ function showLoginModal() {
             var detail = budgetCard.querySelector('.budget-detail');
             if (detail) {
               var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-              var d = new Date(data.updatedAt);
-              var dateStr = months[d.getMonth()] + ' ' + d.getDate();
+              var parts = data.updatedAt.split('-');
+              var dateStr = months[parseInt(parts[1],10) - 1] + ' ' + parseInt(parts[2],10);
               detail.textContent = '$' + data.spent.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2}) + ' of $' + data.limit.toLocaleString() + ' spent \u00B7 Updated ' + dateStr;
             }
           })
