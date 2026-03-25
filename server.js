@@ -252,3 +252,5 @@ if (!fs.existsSync(indexPath)) {
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
+
+// Retrigger deploy
