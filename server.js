@@ -205,7 +205,7 @@ function saveRampBudget(data) {
 const savedBudget = loadRampBudget();
 if (savedBudget) rampBudget = savedBudget;
 
-const ALLOWED_KEYS = ['suggestions', 'votes', 'pastEvents', 'sfEvents', 'volunteerEvents', 'teamEvents', 'snacks'];
+const ALLOWED_KEYS = ['suggestions', 'votes', 'pastEvents', 'sfEvents', 'volunteerEvents', 'teamEvents', 'snacks', 'quotes'];
 
 app.get('/api/store/:key', ensureAuth, (req, res) => {
   const key = req.params.key;
@@ -238,6 +238,15 @@ app.get('/api/store', ensureAuth, (req, res) => {
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
+
+// Public endpoint for ticker quotes (no auth needed)
+app.get('/api/quotes', (req, res) => {
+  try {
+    const fp = path.join(DATA_DIR, 'quotes.json');
+    if (!fs.existsSync(fp)) return res.json(null);
+    res.json(JSON.parse(fs.readFileSync(fp, 'utf8')));
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
 
 // ── Auth gate: require login for all pages ──
 app.use((req, res, next) => {
