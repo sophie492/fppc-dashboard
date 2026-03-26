@@ -1675,6 +1675,41 @@
     display: flex;
     gap: 8px;
   }
+
+/* Create Event Modal */
+.create-event-overlay {
+  display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.5); z-index: 10000; align-items: center; justify-content: center;
+}
+.create-event-overlay.active { display: flex; }
+.create-event-modal {
+  background: var(--card); border-radius: 16px; padding: 32px; width: 480px; max-width: 90vw;
+  max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+.create-event-modal h2 { margin: 0 0 20px; color: var(--accent); font-size: 1.4rem; }
+.create-event-modal label { display: block; margin-bottom: 4px; font-weight: 600; color: var(--text); font-size: 0.85rem; }
+.create-event-modal input, .create-event-modal textarea, .create-event-modal select {
+  width: 100%; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 8px;
+  font-size: 0.95rem; margin-bottom: 14px; font-family: inherit; background: var(--bg);
+}
+.create-event-modal textarea { resize: vertical; min-height: 80px; }
+.create-event-modal .form-row { display: flex; gap: 12px; }
+.create-event-modal .form-row > div { flex: 1; }
+.create-event-modal .btn-create {
+  background: var(--accent); color: white; border: none; padding: 12px 24px; border-radius: 8px;
+  font-size: 1rem; font-weight: 600; cursor: pointer; width: 100%; margin-top: 8px;
+}
+.create-event-modal .btn-create:hover { background: var(--accent2); }
+.create-event-modal .btn-cancel {
+  background: transparent; color: var(--text-muted); border: 1.5px solid var(--border);
+  padding: 10px 20px; border-radius: 8px; font-size: 0.9rem; cursor: pointer; width: 100%; margin-top: 8px;
+}
+.btn-create-event {
+  background: var(--accent); color: white; border: none; padding: 8px 16px; border-radius: 20px;
+  font-size: 0.85rem; font-weight: 600; cursor: pointer; margin-left: 8px;
+}
+.btn-create-event:hover { background: var(--accent2); }
+
 </style>
 </head>
 <body>
@@ -1693,6 +1728,43 @@
       <div class="header-badge">Est. March 2026</div>
       <div id="role-badge"></div>
     </div>
+  </div>
+</div>
+
+<!-- Create Event Modal -->
+<div class="create-event-overlay" id="create-event-overlay" onclick="if(event.target===this)closeCreateEvent()">
+  <div class="create-event-modal">
+    <h2>📅 Create Event</h2>
+    <label>Event Title</label>
+    <input type="text" id="ce-title" placeholder="e.g. Team Happy Hour at Willows">
+    <div class="form-row">
+      <div>
+        <label>Date</label>
+        <input type="date" id="ce-date">
+      </div>
+      <div>
+        <label>Start Time</label>
+        <input type="time" id="ce-start" value="17:00">
+      </div>
+      <div>
+        <label>End Time</label>
+        <input type="time" id="ce-end" value="19:00">
+      </div>
+    </div>
+    <label>Venue / Location</label>
+    <input type="text" id="ce-venue" placeholder="e.g. Willows Beer Garden, 1575 Sutter St">
+    <label>Category</label>
+    <select id="ce-category">
+      <option value="Social">🎉 Social</option>
+      <option value="Food & Drink">🍔 Food & Drink</option>
+      <option value="Team Building">🏹 Team Building</option>
+      <option value="Happy Hour">🍻 Happy Hour</option>
+      <option value="Free">🆓 Free</option>
+    </select>
+    <label>Description / Notes</label>
+    <textarea id="ce-desc" placeholder="Event details, what to expect, any instructions..."></textarea>
+    <button class="btn-create" onclick="submitCreateEvent()">Open as Draft in Google Calendar →</button>
+    <button class="btn-cancel" onclick="closeCreateEvent()">Cancel</button>
   </div>
 </div>
 
@@ -2260,7 +2332,7 @@ function applyRole() {
 function renderRoleBadge() {
     const container = document.getElementById('role-badge');
     if (isAdmin) {
-      container.innerHTML = `<button class="role-btn fppc-admin" onclick="toggleAdmin()">🎉 Admin Mode · Switch to Employee View</button>`;
+      container.innerHTML = `<button class="role-btn fppc-admin" onclick="toggleAdmin()">🎉 Admin Mode · Switch to Employee View</button><button class="btn-create-event" onclick="openCreateEvent()">+ Create Event</button>`;
     } else if (canAdmin) {
       container.innerHTML = `<button class="role-btn employee" onclick="toggleAdmin()">👤 Employee View · Switch to Admin</button>`;
     } else {
@@ -4456,5 +4528,59 @@ loadFromServer();
   <span style="font-weight:600;letter-spacing:3px;text-transform:uppercase;color:var(--forest);">FERMAT</span> · Party Planning Committee
 </div>
 
+
+<script>
+// SF Team emails for calendar invites
+var sfTeamEmails = [
+  'sophie@fermatcommerce.com','rishabh@fermatcommerce.com','shreyas@fermatcommerce.com',
+  'bharat@fermatcommerce.com','alex@fermatcommerce.com','alec.gastesi@fermatcommerce.com',
+  'ranjit@fermatcommerce.com','emilyhoward@fermatcommerce.com','jfeiber@fermatcommerce.com',
+  'rangaraj@fermatcommerce.com','romain@fermatcommerce.com','andrew@fermatcommerce.com',
+  'koushik@fermatcommerce.com','rahul@fermatcommerce.com','rajat@fermatcommerce.com',
+  'aditya@fermatcommerce.com'
+];
+
+function openCreateEvent() {
+  document.getElementById('create-event-overlay').classList.add('active');
+  // Default date to tomorrow
+  var tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  document.getElementById('ce-date').value = tomorrow.toISOString().split('T')[0];
+}
+
+function closeCreateEvent() {
+  document.getElementById('create-event-overlay').classList.remove('active');
+}
+
+function submitCreateEvent() {
+  var title = document.getElementById('ce-title').value.trim();
+  var date = document.getElementById('ce-date').value;
+  var start = document.getElementById('ce-start').value;
+  var end = document.getElementById('ce-end').value;
+  var venue = document.getElementById('ce-venue').value.trim();
+  var category = document.getElementById('ce-category').value;
+  var desc = document.getElementById('ce-desc').value.trim();
+
+  if (!title || !date) { alert('Please fill in at least a title and date.'); return; }
+
+  // Build Google Calendar URL
+  var startDT = date.replace(/-/g, '') + 'T' + (start || '17:00').replace(/:/g, '') + '00';
+  var endDT = date.replace(/-/g, '') + 'T' + (end || '19:00').replace(/:/g, '') + '00';
+
+  var fullDesc = '[' + category + '] ' + (desc || '');
+  fullDesc += '\n\nOrganized by the Fermat Party Planning Committee 🎉';
+
+  var url = 'https://calendar.google.com/calendar/render?action=TEMPLATE'
+    + '&text=' + encodeURIComponent(title)
+    + '&dates=' + startDT + '/' + endDT
+    + '&ctz=America/Los_Angeles'
+    + '&location=' + encodeURIComponent(venue)
+    + '&details=' + encodeURIComponent(fullDesc)
+    + '&add=' + encodeURIComponent(sfTeamEmails.join(','));
+
+  window.open(url, '_blank');
+  closeCreateEvent();
+}
+</script>
 </body>
 </html>
