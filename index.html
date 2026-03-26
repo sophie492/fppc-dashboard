@@ -3822,6 +3822,7 @@ function voteApproved(btn, index) {
 
 function approveSuggestion(index) {
   suggestions[index].approved = true;
+  suggestions[index].status = 'approved';
   saveToServer('suggestions', suggestions);
   renderSuggestions();
   renderAllGrids(); // Add to main tab
@@ -4566,7 +4567,12 @@ try { renderCalendar(); } catch(e) { console.warn('renderCalendar init error:', 
           if (data.volunteerEvents && data.volunteerEvents.length) { volunteerEvents = data.volunteerEvents; }
           if (data.teamEvents && data.teamEvents.length) { teamEvents = data.teamEvents; }
           if (data.pastEvents && data.pastEvents.length) { pastEvents = data.pastEvents; }
-          if (data.suggestions && data.suggestions.length) { suggestions = data.suggestions; }
+          if (data.suggestions && data.suggestions.length) {
+            suggestions = data.suggestions.map(function(s) {
+              if (s.status === 'approved') s.approved = true;
+              return s;
+            });
+          }
           if (data.votes && data.votes.length) {
             voteData = {};
             data.votes.forEach(function(v) {
