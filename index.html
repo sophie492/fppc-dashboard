@@ -4543,7 +4543,16 @@ try { renderCalendar(); } catch(e) { console.warn('renderCalendar init error:', 
     // Server persistence helpers
     function saveToServer(key, data) {
       try {
-        var payload = { action: "replace", sheet: key, data: data };
+        var serData = Array.isArray(data) ? data.map(function(item) {
+          var obj = {};
+          for (var k in item) {
+            var v = item[k];
+            if (v && typeof v === "object" && !Array.isArray(v)) obj[k] = JSON.stringify(v);
+            else obj[k] = v;
+          }
+          return obj;
+        }) : data;
+        var payload = { action: "replace", sheet: key, data: serData };
         if (key === "votes" && !Array.isArray(data)) {
           payload.data = Object.keys(data).map(function(k) {
             return { eventTitle: k.split("||")[0] || "", sheetName: k.split("||")[1] || "", voterName: data[k], votedAt: new Date().toISOString() };
@@ -4570,6 +4579,9 @@ try { renderCalendar(); } catch(e) { console.warn('renderCalendar init error:', 
           if (data.suggestions && data.suggestions.length) {
             suggestions = data.suggestions.map(function(s) {
               if (s.status === 'approved') s.approved = true;
+              if (typeof s.research === 'string' && s.research.charAt(0) === '{') {
+                try { s.research = JSON.parse(s.research); } catch(e) {}
+              }
               return s;
             });
           }
