@@ -4542,32 +4542,47 @@ try { renderCalendar(); } catch(e) { console.warn('renderCalendar init error:', 
     // Server persistence helpers
     function saveToServer(key, data) {
       try {
-        fetch("/api/store/" + key, {
+        var payload = { action: "replace", sheet: key, data: data };
+        if (key === "votes" && !Array.isArray(data)) {
+          payload.data = Object.keys(data).map(function(k) {
+            return { eventTitle: k.split("||")[0] || "", sheetName: k.split("||")[1] || "", voterName: data[k], votedAt: new Date().toISOString() };
+          });
+        }
+        fetch("https://script.google.com/macros/s/AKfycbzTzXIYteGl_B8LGESf30EUVaQL1w4wbQJoyOfDVeUySihIjzYSr0tkj8FC5L-PD-O9/exec", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(data),
-          credentials: "same-origin"
+          headers: { "Content-Type": "text/plain" },
+          body: JSON.stringify(payload),
+          mode: "no-cors"
         }).catch(function(e) { console.warn("saveToServer " + key + " failed:", e); });
       } catch(e) { console.warn("saveToServer error:", e); }
     }
 
     function loadFromServer() {
-      var keys = ["suggestions", "votes", "pastEvents", "sfEvents", "volunteerEvents", "teamEvents", "snacks"];
-      keys.forEach(function(key) {
-        fetch("/api/store/" + key, { credentials: "same-origin" })
-          .then(function(r) { return r.json(); })
-          .then(function(data) {
-            if (!data) return;
-            if (key === "suggestions") { suggestions = data; try { renderSuggestions(); } catch(e){} }
-            else if (key === "votes") { voteData = data; try { renderAllGrids(); } catch(e){} }
-            else if (key === "pastEvents") { pastEvents = data; try { renderPastGrid(); } catch(e){} }
-            else if (key === "sfEvents") { sfEvents = data; try { renderAllGrids(); } catch(e){} }
-            else if (key === "volunteerEvents") { volunteerEvents = data; try { renderAllGrids(); } catch(e){} }
-            else if (key === "teamEvents") { teamEvents = data; try { renderAllGrids(); } catch(e){} }
-            else if (key === "snacks") { snacks = data; try { renderSnacks(); } catch(e){} }
-          })
-          .catch(function(e) { console.warn("loadFromServer " + key + " failed:", e); });
-      });
+      fetch("https://script.google.com/macros/s/AKfycbzTzXIYteGl_B8LGESf30EUVaQL1w4wbQJoyOfDVeUySihIjzYSr0tkj8FC5L-PD-O9/exec")
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          if (!data) return;
+          if (data.sfEvents && data.sfEvents.length) { sfEvents = data.sfEvents; }
+          if (data.volunteerEvents && data.volunteerEvents.length) { volunteerEvents = data.volunteerEvents; }
+          if (data.teamEvents && data.teamEvents.length) { teamEvents = data.teamEvents; }
+          if (data.pastEvents && data.pastEvents.length) { pastEvents = data.pastEvents; }
+          if (data.suggestions && data.suggestions.length) { suggestions = data.suggestions; }
+          if (data.votes && data.votes.length) {
+            voteData = {};
+            data.votes.forEach(function(v) {
+              var key = v.eventTitle + "||" + v.sheetName;
+              voteData[key] = v.voterName;
+            });
+          }
+          if (data.snacks && data.snacks.length) {
+            window._sheetsSnacks = data.snacks;
+          }
+          try { renderAllGrids(); } catch(e) { console.warn("renderAllGrids:", e); }
+          try { renderPastGrid(); } catch(e) { console.warn("renderPastGrid:", e); }
+          try { renderSuggestions(); } catch(e) { console.warn("renderSuggestions:", e); }
+          console.log("Loaded data from Google Sheets");
+        })
+        .catch(function(e) { console.warn("loadFromServer failed:", e); });
     }
 
 // Load shared data from server on page load
