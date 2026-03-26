@@ -4507,6 +4507,37 @@ try { renderPastGrid(); } catch(e) { console.warn('renderPastGrid init error:', 
 try { renderCalendar(); } catch(e) { console.warn('renderCalendar init error:', e); }
 
 
+    // Server persistence helpers
+    function saveToServer(key, data) {
+      try {
+        fetch("/api/store/" + key, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+          credentials: "same-origin"
+        }).catch(function(e) { console.warn("saveToServer " + key + " failed:", e); });
+      } catch(e) { console.warn("saveToServer error:", e); }
+    }
+
+    function loadFromServer() {
+      var keys = ["suggestions", "votes", "pastEvents", "sfEvents", "volunteerEvents", "teamEvents", "snacks"];
+      keys.forEach(function(key) {
+        fetch("/api/store/" + key, { credentials: "same-origin" })
+          .then(function(r) { return r.json(); })
+          .then(function(data) {
+            if (!data) return;
+            if (key === "suggestions") { suggestions = data; try { renderSuggestions(); } catch(e){} }
+            else if (key === "votes") { voteData = data; try { renderAllGrids(); } catch(e){} }
+            else if (key === "pastEvents") { pastEvents = data; try { renderPastGrid(); } catch(e){} }
+            else if (key === "sfEvents") { sfEvents = data; try { renderAllGrids(); } catch(e){} }
+            else if (key === "volunteerEvents") { volunteerEvents = data; try { renderAllGrids(); } catch(e){} }
+            else if (key === "teamEvents") { teamEvents = data; try { renderAllGrids(); } catch(e){} }
+            else if (key === "snacks") { snacks = data; try { renderSnacks(); } catch(e){} }
+          })
+          .catch(function(e) { console.warn("loadFromServer " + key + " failed:", e); });
+      });
+    }
+
 // Load shared data from server on page load
 loadFromServer();
 </script>
