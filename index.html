@@ -1281,6 +1281,18 @@
   }
   .snack-card .snack-vote-btn:hover { background: var(--mint); color: var(--forest); border-color: var(--forest); }
   .snack-card .snack-vote-btn.voted { background: var(--forest); color: white; border-color: var(--forest); }
+  .snack-card .snack-delete-btn {
+    padding: 4px 8px;
+    border-radius: 50%;
+    border: 1px solid #e0e0e0;
+    background: white;
+    cursor: pointer;
+    font-size: 12px;
+    flex-shrink: 0;
+    opacity: 0.5;
+    transition: all 0.15s;
+  }
+  .snack-card .snack-delete-btn:hover { opacity: 1; background: #fee; border-color: #e55; }
 
   .snack-suggest-form {
     background: var(--card);
@@ -4184,6 +4196,7 @@ function renderSnacks() {
         <div class="snack-votes-count">${voteCount} vote${voteCount !== 1 ? 's' : ''}${s.voters.length > 0 ? ' · ' + s.voters.slice(0, 3).join(', ') + (s.voters.length > 3 ? ' +' + (s.voters.length - 3) : '') : ''}</div>
       </div>
       <button class="snack-vote-btn ${voted ? 'voted' : ''}" onclick="voteSnack(${s._idx})">${voted ? '✓' : '👍'}</button>
+      ${isAdmin ? '<button class="snack-delete-btn" onclick="deleteSnack(' + s._idx + ')" title="Delete snack">🗑</button>' : ''}
     </div>`;
   }).join('');
 }
@@ -4200,6 +4213,15 @@ function voteSnack(idx) {
     saveSnacks();
     renderSnacks();
   });
+}
+
+function deleteSnack(idx) {
+  if (!isAdmin) return;
+  if (confirm('Remove this snack from the board?')) {
+    snacks.splice(idx, 1);
+    saveSnacks();
+    renderSnacks();
+  }
 }
 
 function addSnack() {
