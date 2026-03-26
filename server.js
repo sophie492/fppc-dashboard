@@ -1,5 +1,6 @@
 const express = require('express');
 const session = require('express-session');
+const FileStore = require('session-file-store')(session);
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const path = require('path');
@@ -18,6 +19,7 @@ const ALLOWED_DOMAIN = 'fermatcommerce.com';
 app.set('trust proxy', 1);
 app.use(session({
   secret: process.env.SESSION_SECRET || 'change-me-in-production',
+  store: process.env.RAILWAY_VOLUME_MOUNT_PATH ? new FileStore({ path: path.join(process.env.RAILWAY_VOLUME_MOUNT_PATH, 'sessions'), ttl: 604800, retries: 1 }) : undefined,
   resave: false,
   saveUninitialized: false,
   cookie: {
@@ -187,7 +189,7 @@ app.post('/api/events/refresh', ensureAdmin, (req, res) => {
 
 
 // ── Shared data store (replaces all localStorage) ──
-const DATA_DIR = path.join(__dirname, 'data');
+const DATA_DIR = process.env.RAILWAY_VOLUME_MOUNT_PATH ? path.join(process.env.RAILWAY_VOLUME_MOUNT_PATH, 'data') : path.join(__dirname, 'data');
 if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
 
 // Ramp budget file persistence
