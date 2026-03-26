@@ -2684,6 +2684,18 @@ function renderAllGrids() {
         }
       });
 
+  // Update tab badge counts
+      var sfCount = sfEvents.filter(function(e) { return !isEventPast(e.date); }).length;
+      var volCount = volunteerEvents.filter(function(e) { return !isEventPast(e.date); }).length;
+      var tmCount = teamEvents.filter(function(e) { return !isEventPast(e.date); }).length;
+      var pastTotal = [sfEvents, volunteerEvents, teamEvents].reduce(function(sum, arr) { return sum + arr.filter(function(e) { return isEventPast(e.date); }).length; }, 0);
+      var pendingSug = (typeof suggestions !== 'undefined') ? suggestions.filter(function(s) { return !s.approved; }).length : 0;
+      var ec = document.getElementById('events-count'); if (ec) ec.textContent = sfCount;
+      var vc = document.getElementById('volunteer-count'); if (vc) vc.textContent = volCount;
+      var tc = document.getElementById('team-count'); if (tc) tc.textContent = tmCount;
+      var sc = document.getElementById('suggestions-count'); if (sc) sc.textContent = pendingSug;
+      var pc = document.getElementById('past-count'); if (pc) pc.textContent = pastTotal;
+
   // Inject approved suggestions into the appropriate main grids
   if (typeof suggestions !== 'undefined') {
     const approved = suggestions.filter(s => s.approved);
