@@ -9,7 +9,7 @@
 
   * { margin: 0; padding: 0; box-sizin border-box; }
 
-  :root  {
+  :root  
     --bg: #F5F1EA;
     --card: #FFFFFF;
     --card-hover: #FAFAF7;
@@ -2425,7 +2425,7 @@ function logoutAdmin() {
 applyRole();
 
 // ========== EVENT DATA ==========
-const sfEvents = [
+let sfEvents = [
   { title: "St. Patrick's 3-Day Pub Crawl", date: "Mar 13–17", location: "Multiple bars citywide", description: "Over 15,000 people. Drink specials. No cover. The biggest St. Patrick's Day party in SF. The FPPC approves.", type: "social", free: false, price: "$15", link: "https://sf.funcheap.com/" },
   { title: "SFMOMA — $15 Discounted Admission", date: "Mar 2 – Apr 17", location: "SFMOMA, 151 3rd St, SoMa", description: "Full museum access at nearly half price through Apr 17. Culture! Art! Things to argue about at happy hour!", type: "social", free: false, price: "$15", link: "https://www.sfmoma.org/deals-discounts/" },
   { title: "SF Chocolate Salon & Festival", date: "Mar 28, 11 AM–5 PM", location: "Hall of Flowers, Golden Gate Park", description: "20th Annual. Artisan chocolate. Tastings. Demonstrations. The committee unanimously approves of chocolate.", type: "food", free: false, price: "$$", link: "https://www.sfchocolatesalon.com/" },
@@ -2445,7 +2445,7 @@ const sfEvents = [
   { title: "SOMA Nights — Art & Food Walk", date: "May 28, 5–9 PM", location: "Folsom St (6th–12th), SoMa", description: "20+ businesses, pop-up vendors, performances, street activations. Monthly block party.", type: "food", free: true, link: "https://sf.funcheap.com/soma-nights-neighborhood-block-party-night-market-sf-10/" },
 ];
 
-const volunteerEvents = [
+let volunteerEvents = [
   { title: "Presidio Forest Stewards", date: "Mar 14, 9 AM–12 PM", location: "Presidio of San Francisco", description: "Restore natural areas and create wildlife corridors. Recurring: every Saturday 9 AM–Noon.", type: "volunteer", link: "https://www.parksconservancy.org/volunteer/volunteer-projects-and-activities" },
   { title: "Black Point Historic Gardens", date: "Mar 13, 9 AM–12 PM", location: "Fort Mason, SF", description: "Help maintain the historic gardens at Fort Mason. Tools and gloves provided.", type: "volunteer", link: "https://www.parksconservancy.org/volunteer/volunteer-projects-and-activities" },
   { title: "Fort Mason Historic Landscaping", date: "Mar 17, 9 AM–12 PM", location: "Fort Mason, SF", description: "Maintain historic landscapes and green spaces at Fort Mason Center.", type: "volunteer", link: "https://www.parksconservancy.org/volunteer/volunteer-projects-and-activities" },
@@ -2458,7 +2458,7 @@ const volunteerEvents = [
   { title: "SF Parks & Recreation Volunteer Days", date: "Ongoing — see calendar", location: "Various SF Parks", description: "Help beautify outdoor spaces. Planting, trail maintenance, cleanup. Contact recparkvolunteer@sfgov.org.", type: "volunteer", link: "https://sfrecpark.org/1498/Volunteer-Calendar" },
 ];
 
-const teamEvents = [
+let teamEvents = [
   { title: "Italian Culinary Team Experience", date: "Book anytime", location: "SF", description: "Cook together, eat together, bond forever. Top-rated team activity in SF.", type: "team", price: "From $85/person", link: "https://www.eventsinminutes.com/blog/best-team-building-activities-in-san-francisco-2026/" },
   { title: "The Great Art Heist", date: "Book anytime", location: "SF", description: "Escape room meets art gallery. Solve puzzles, steal paintings (fake ones). Very FPPC.", type: "team", price: "From $65/person", link: "https://www.eventsinminutes.com/blog/best-team-building-activities-in-san-francisco-2026/" },
   { title: "Company Feud Game Show", date: "Book anytime", location: "SF (or office)", description: "It's Family Feud but with coworkers. Survey says: the FPPC delivers.", type: "team", price: "From $75/person", link: "https://www.eventsinminutes.com/blog/best-team-building-activities-in-san-francisco-2026/" },
@@ -2584,7 +2584,7 @@ function renderApprovedCard(s, index) {
 }
 
 // ========== PAST EVENTS ==========
-const pastEvents = [];
+let pastEvents = [];
 
 function renderPastCard(event, index) {
   const typeClass = event.type || 'social';
@@ -2709,11 +2709,11 @@ try {
 } catch(e) { console.warn('Failed to load saved events:', e); }
 
 // ========== SUGGESTIONS DATA (must load before renderAllGrids) ==========
-const suggestions = [];
+let suggestions = [];
 
 // ========== VOTE DATA (must load before renderAllGrids) ==========
 const SHEETS_API_URL = 'https://script.google.com/macros/s/AKfycbxNEBeCoGTDnx5iZhB7viVKkzOaEg6uxeZZjbCher53u1QV87YYtYm0W-RLJAqcl-IX/exec';
-const voteData = {};
+let voteData = {};
 let currentVoterName = '';
 const VOTE_THRESHOLD = 4;
 let sheetsReady = false;
