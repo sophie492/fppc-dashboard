@@ -2495,7 +2495,7 @@ function renderCard(event, arrayName, index) {
       </div>
       <h3>${event.title}</h3>
       <div class="meta">
-        <div>📅 ${event.date}</div>
+        <div>📅 ${getDayOfWeek(event.date)}${event.date}</div>
         <div>📍 ${event.location}</div>
         ${priceInfo}
       </div>
@@ -2532,7 +2532,7 @@ function renderApprovedCard(s, index) {
       </div>
       <h3>${s.title}</h3>
       <div class="meta">
-        <div>📅 ${s.date}</div>
+        <div>📅 ${getDayOfWeek(s.date)}${s.date}</div>
         <div>📍 ${s.location}</div>
         ${priceInfo}
         <div>👤 Suggested by ${s.name}</div>
@@ -2549,7 +2549,23 @@ function renderApprovedCard(s, index) {
 }
 
 // Filter out past events based on their date string
-  function isEventPast(dateStr) {
+  function getDayOfWeek(dateStr) {
+      if (!dateStr) return '';
+      if (/every|ongoing|anytime|walk-in|book|TBD/i.test(dateStr)) return '';
+      var mo = {Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};
+      var days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+      var mm = dateStr.match(/\b(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\b/);
+      if (!mm) return '';
+      var after = dateStr.substring(dateStr.indexOf(mm[1]) + mm[1].length);
+      var dd = after.match(/\d+/);
+      if (!dd) return '';
+      var yr = 2026; var ym = dateStr.match(/\b(202\d)\b/); if (ym) yr = parseInt(ym[1]);
+      var d = new Date(yr, mo[mm[1]], parseInt(dd[0]));
+      if (isNaN(d.getTime())) return '';
+      return days[d.getDay()] + ', ';
+    }
+
+    function isEventPast(dateStr) {
     if (!dateStr) return false;
     if (/every|ongoing|anytime|walk-in|book/i.test(dateStr)) return false;
     var mo = {Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};
@@ -2608,7 +2624,7 @@ function renderPastCard(event, index) {
       </div>
       <h3>${event.title}</h3>
       <div class="meta">
-        <div>📅 ${event.date}</div>
+        <div>📅 ${getDayOfWeek(event.date)}${event.date}</div>
         <div>📍 ${event.location}</div>
         ${priceInfo}
       </div>
@@ -3777,7 +3793,7 @@ function renderSuggestions() {
       ${statusBadge}
       <h3>${s.title}</h3>
       <div class="meta">
-        <div>📅 ${s.date}</div>
+        <div>📅 ${getDayOfWeek(s.date)}${s.date}</div>
         <div>📍 ${s.location}</div>
         <div>💰 ${s.cost}</div>
         <div>👤 Submitted by ${s.name} · ${s.submittedAt}</div>
