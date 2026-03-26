@@ -10,7 +10,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Admin emails
-const ADMIN_EMAILS = ['sophie@fermatcommerce.com', 'rangaraj@fermatcommerce.com'];
+const ADMIN_EMAILS = ['sophie@fermatcommerce.com', 'rangaraj@fermatcommerce.com', 'emily@fermatcommerce.com'];
 
 // Domain whitelist
 const ALLOWED_DOMAIN = 'fermatcommerce.com';
