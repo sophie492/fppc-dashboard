@@ -2554,7 +2554,10 @@ function renderApprovedCard(s, index) {
     if (/every|ongoing|anytime|walk-in|book/i.test(dateStr)) return false;
     var mo = {Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};
     var today = new Date(); today.setHours(0,0,0,0);
-    var parts = dateStr.split(/[\u2013\u2014\-]/); // split on en-dash, em-dash, hyphen
+    // Strip time portions (e.g. '11 AM-5 PM') to avoid confusing time dashes with date dashes
+    var cleaned = dateStr.replace(/,?\s*\d{1,2}(?::\d{2})?\s*(?:AM|PM)\s*[\u2013\u2014\-]\s*\d{1,2}(?::\d{2})?\s*(?:AM|PM)/gi, '').replace(/,?\s*\d{1,2}(?::\d{2})?\s*(?:AM|PM)/gi, '').trim();
+    if (!cleaned) cleaned = dateStr;
+    var parts = cleaned.split(/[\u2013\u2014\-]/); // split on en-dash, em-dash, hyphen
     var lastPart = parts[parts.length - 1].trim();
     var lastMonth = null, lastDay = null;
     var mm = lastPart.match(/\b(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\b/);
@@ -2673,7 +2676,13 @@ function renderAllGrids() {
       // Update upcoming events count to exclude past events
       var upcomingCount = [sfEvents, volunteerEvents, teamEvents].reduce(function(sum, arr) { return sum + arr.filter(function(e) { return !isEventPast(e.date); }).length; }, 0);
       var statCards = document.querySelectorAll('.stat-card');
-      statCards.forEach(function(card) { if (card.textContent.indexOf('Upcoming Events') !== -1) { var numEl = card.querySelector('.number'); if (numEl) numEl.textContent = upcomingCount; } });
+      statCards.forEach(function(card) {
+        if (card.textContent.indexOf('Upcoming Events') !== -1) { var numEl = card.querySelector('.number'); if (numEl) numEl.textContent = upcomingCount; }
+        if (card.textContent.indexOf('Events Planned') !== -1) {
+          var plannedCount = (typeof suggestions !== 'undefined') ? suggestions.filter(function(s) { return s.approved; }).length : 0;
+          var numEl = card.querySelector('.number'); if (numEl) numEl.textContent = plannedCount;
+        }
+      });
 
   // Inject approved suggestions into the appropriate main grids
   if (typeof suggestions !== 'undefined') {
