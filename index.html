@@ -4540,6 +4540,42 @@ try { renderCalendar(); } catch(e) { console.warn('renderCalendar init error:', 
 
 // Load shared data from server on page load
 loadFromServer();
+
+    // Load user info and Ramp budget on page load
+    fetch('/api/me', { credentials: 'same-origin' })
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        if (data && data.name) {
+          currentVoterName = data.name.toLowerCase();
+        }
+        // Fetch live Ramp budget data
+        fetch('/api/ramp-budget')
+          .then(function(r) { return r.json(); })
+          .then(function(budget) {
+            var cards = document.querySelectorAll('.stat-card');
+            var budgetCard = null;
+            cards.forEach(function(card) {
+              if (card.textContent.indexOf('Social Budget') !== -1 || card.textContent.indexOf('SOCIAL BUDGET') !== -1) budgetCard = card;
+            });
+            if (!budgetCard) return;
+            var numberEl = budgetCard.querySelector('.number');
+            if (numberEl) numberEl.textContent = '$' + Math.round(budget.remaining);
+            var barFill = budgetCard.querySelector('.budget-bar-fill');
+            if (barFill) {
+              var pct = (budget.spent / budget.limit) * 100;
+              barFill.style.width = pct.toFixed(1) + '%';
+            }
+            var detail = budgetCard.querySelector('.budget-detail');
+            if (detail) {
+              var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+              var parts = budget.updatedAt.split('-');
+              var dateStr = months[parseInt(parts[1],10) - 1] + ' ' + parseInt(parts[2],10);
+              detail.textContent = '$' + budget.spent.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2}) + ' of $' + budget.limit.toLocaleString() + ' spent \u00B7 Updated ' + dateStr;
+            }
+          })
+          .catch(function() { /* keep static values */ });
+      })
+      .catch(function(e) { console.warn('Failed to load user info:', e); });
 </script>
 
 <!-- Calendar Event Popup -->
