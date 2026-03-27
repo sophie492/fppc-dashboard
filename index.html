@@ -536,6 +536,24 @@
     50% { box-shadow: 0 0 12px rgba(219,203,119,0.5); }
   }
 
+  /* -- Votes Leaderboard -- */
+  .votes-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+  .votes-stats{display:flex;gap:16px}
+  .votes-stat{text-align:center}
+  .votes-stat .vs-num{font-size:20px;font-weight:800;color:var(--gold)}
+  .votes-stat .vs-lbl{font-size:9px;text-transform:uppercase;letter-spacing:.6px;color:var(--text-muted)}
+  .vote-rank-card{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:10px;background:var(--card);border:1px solid var(--border);margin-bottom:6px;transition:all .2s}
+  .vote-rank-card:hover{background:var(--card-hover)}
+  .vote-rank-card.gold-rank{border-color:rgba(219,203,119,.25);background:linear-gradient(135deg,var(--card),rgba(219,203,119,.06))}
+  .vote-rank-num{font-size:22px;font-weight:900;min-width:36px;text-align:center;color:var(--text-muted)}
+  .vote-rank-card.gold-rank .vote-rank-num{color:var(--gold)}
+  .vote-rank-info{flex:1}
+  .vote-rank-title{font-size:13px;font-weight:700;color:var(--text)}
+  .vote-rank-meta{font-size:10px;color:var(--text-muted);margin-top:2px;display:flex;gap:8px;flex-wrap:wrap}
+  .vote-rank-count{font-size:20px;font-weight:800;color:var(--gold);min-width:40px;text-align:center}
+  .vote-rank-count small{font-size:9px;display:block;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:.4px}
+  .vote-rank-voters{font-size:10px;color:var(--text-muted);font-style:italic;margin-top:4px}
+
   /* Search result card in suggestion modal */
   .search-result-link {
     display: block;
@@ -1869,6 +1887,7 @@ fetch('/api/quotes')
   <div class="tab" data-tab="sports">Sports <span class="count" id="sports-count">0</span></div>
   <div class="tab" data-tab="happyhour">Happy Hour</div>
   <div class="tab" data-tab="calendar">Calendar</div>
+  <div class="tab" data-tab="votes">&#9733; Votes</div>
   <div class="tab" data-tab="suggestions">Suggestions <span class="count" id="suggestions-count">0</span></div>
   <div class="tab" data-tab="snacks">Snacks 🍿</div>
   <div class="tab" data-tab="bylaws">Bylaws & Charter <span class="count">8</span></div>
@@ -1975,6 +1994,23 @@ fetch('/api/quotes')
     <div id="calendar-recurring" style="margin-top:24px;">
       <!-- Recurring / ongoing events listed below -->
     </div>
+  </div>
+
+  <!-- ===== VOTES TAB ===== -->
+  <div class="tab-content" id="tab-votes">
+    <div class="votes-header">
+      <h3 style="font-size:16px;font-weight:800;color:var(--gold);letter-spacing:-.3px">&#9733; Event Leaderboard</h3>
+      <div class="votes-stats" id="votes-stats"></div>
+    </div>
+    <div class="votes-filters" style="display:flex;gap:6px;margin:12px 0;flex-wrap:wrap">
+      <button class="pill active" data-vfilter="all">All Events</button>
+      <button class="pill" data-vfilter="popular">Popular (4+)</button>
+      <button class="pill" data-vfilter="social">Social</button>
+      <button class="pill" data-vfilter="food">Food &amp; Drink</button>
+      <button class="pill" data-vfilter="volunteer">Volunteer</button>
+      <button class="pill" data-vfilter="team">Team</button>
+    </div>
+    <div id="votes-leaderboard"></div>
   </div>
 
   <!-- ===== EVENTS TAB ===== -->
@@ -2826,6 +2862,115 @@ document.addEventListener('click', function(e) {
 
 
 
+// ========== VOTES LEADERBOARD ==========
+function renderVotesTab() {
+  var allEvents = [];
+
+  var addEvents = function(arr, arrayName) {
+    arr.forEach(function(e, i) {
+      var key = getVoteKey('curated', arrayName + '-' + i);
+      var entry = getVoteEntry(key);
+      allEvents.push({
+        title: e.title,
+        date: e.date,
+        location: e.location,
+        type: e.type || 'social',
+        free: e.free,
+        votes: entry.voters.length,
+        voters: entry.voters,
+        source: 'curated',
+        arrayName: arrayName,
+        index: i
+      });
+    });
+  };
+
+  addEvents(sfEvents, 'sfEvents');
+  addEvents(volunteerEvents, 'volunteerEvents');
+  addEvents(teamEvents, 'teamEvents');
+  if (typeof sportsGames !== 'undefined') addEvents(sportsGames, 'sportsGames');
+
+  // Add approved suggestions
+  suggestions.filter(function(s) { return s.approved; }).forEach(function(s, i) {
+    var key = getVoteKey('approved', String(i));
+    var entry = getVoteEntry(key);
+    allEvents.push({
+      title: s.title,
+      date: s.date,
+      location: s.location,
+      type: s.category || 'social',
+      free: false,
+      votes: entry.voters.length,
+      voters: entry.voters,
+      source: 'suggestion',
+      index: i
+    });
+  });
+
+  // Sort by votes descending
+  allEvents.sort(function(a, b) { return b.votes - a.votes; });
+
+  // Stats
+  var totalVotes = allEvents.reduce(function(sum, e) { return sum + e.votes; }, 0);
+  var popularCount = allEvents.filter(function(e) { return e.votes >= VOTE_THRESHOLD; }).length;
+  var allVoters = [];
+  allEvents.forEach(function(e) { e.voters.forEach(function(v) { if (allVoters.indexOf(v.toLowerCase()) === -1) allVoters.push(v.toLowerCase()); }); });
+  var uniqueVoters = allVoters.length;
+
+  var statsEl = document.getElementById('votes-stats');
+  if (statsEl) {
+    statsEl.innerHTML =
+      '<div class="votes-stat"><div class="vs-num">' + totalVotes + '</div><div class="vs-lbl">Total Votes</div></div>' +
+      '<div class="votes-stat"><div class="vs-num">' + popularCount + '</div><div class="vs-lbl">Popular</div></div>' +
+      '<div class="votes-stat"><div class="vs-num">' + uniqueVoters + '</div><div class="vs-lbl">Voters</div></div>';
+  }
+
+  var container = document.getElementById('votes-leaderboard');
+  if (!container) return;
+
+  var eventsWithVotes = allEvents.filter(function(e) { return e.votes > 0; });
+
+  if (eventsWithVotes.length === 0) {
+    container.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-muted)">No votes yet! Go vote on some events.</div>';
+    return;
+  }
+
+  var typeColors = { social: '#294339', food: '#CA983F', volunteer: '#48BB78', team: '#4299E1', sports: '#C1B1D5' };
+
+  container.innerHTML = eventsWithVotes.map(function(e, rank) {
+    var isGold = rank < 3 && e.votes >= VOTE_THRESHOLD;
+    var tc = typeColors[e.type] || typeColors.social;
+    return '<div class="vote-rank-card ' + (isGold ? 'gold-rank' : '') + '" data-vtype="' + e.type + '">' +
+      '<div class="vote-rank-num">#' + (rank + 1) + '</div>' +
+      '<div class="vote-rank-info">' +
+        '<div class="vote-rank-title">' + e.title + (e.votes >= VOTE_THRESHOLD ? ' <span class="milestone-badge" style="font-size:10px">&#128293; Popular!</span>' : '') + '</div>' +
+        '<div class="vote-rank-meta">' +
+          '<span style="font-size:9px;padding:2px 5px;border-radius:3px;font-weight:600;background:' + tc + '22;color:' + tc + '">' + e.type + '</span>' +
+          (e.date ? '<span>&#128197; ' + getDayOfWeek(e.date) + e.date + '</span>' : '') +
+          (e.location ? '<span>&#128205; ' + e.location + '</span>' : '') +
+          (e.free ? '<span style="color:var(--green);font-weight:600">FREE</span>' : '') +
+        '</div>' +
+        (e.voters.length > 0 ? '<div class="vote-rank-voters">Voted: ' + e.voters.join(', ') + '</div>' : '') +
+      '</div>' +
+      '<div class="vote-rank-count">' + e.votes + '<small>votes</small></div>' +
+    '</div>';
+  }).join('');
+
+  // Wire up filters
+  document.querySelectorAll('[data-vfilter]').forEach(function(btn) {
+    btn.onclick = function() {
+      document.querySelectorAll('[data-vfilter]').forEach(function(b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      var filter = btn.dataset.vfilter;
+      document.querySelectorAll('.vote-rank-card').forEach(function(card) {
+        if (filter === 'all') card.style.display = '';
+        else if (filter === 'popular') card.style.display = card.querySelector('.milestone-badge') ? '' : 'none';
+        else card.style.display = card.dataset.vtype === filter ? '' : 'none';
+      });
+    };
+  });
+}
+
 function renderAllGrids() {
   renderGrid('events-grid', sfEvents, 'sfEvents');
   renderGrid('volunteer-grid', volunteerEvents, 'volunteerEvents');
@@ -2874,6 +3019,7 @@ function renderAllGrids() {
       }
     }
   }
+  try { renderVotesTab(); } catch(e) { console.warn('renderVotesTab error:', e); }
 }
 
 // Load any saved curated event edits before rendering
@@ -2984,6 +3130,7 @@ document.querySelectorAll('.tab').forEach(tab => {
     if (tab.dataset.tab === 'calendar') try { renderCalendar(); } catch(e) {}
     if (tab.dataset.tab === 'happyhour') try { drawWheel(); renderHHList(); } catch(e) {}
     if (tab.dataset.tab === 'snacks') try { renderSnacks(); } catch(e) {}
+    if (tab.dataset.tab === 'votes') try { renderVotesTab(); } catch(e) {}
 
   });
 });
