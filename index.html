@@ -2786,7 +2786,7 @@ function renderSportsGrid(filter) {
       </div>
       <div class="description">${e.description}</div>
       <div class="actions">
-        <button class="btn btn-vote${votedClass}" onclick="voteSportsGame(${origIndex})">\uD83D\uDDF3\uFE0F ${userVoted ? 'Voted' : 'Vote'} <span class="vote-count">(${voteCount})</span></button>
+        <button class="btn btn-vote${votedClass}" onclick="vote(this, \'sportsGames\', ${origIndex})">\uD83D\uDDF3\uFE0F ${userVoted ? 'Voted' : 'Vote'} <span class="vote-count">(${voteCount})</span></button>
         <a href="${e.link}" target="_blank" class="btn btn-outline">Learn More \u2197</a>
       </div>
       ${votersText}
@@ -2830,7 +2830,7 @@ function renderAllGrids() {
   renderGrid('events-grid', sfEvents, 'sfEvents');
   renderGrid('volunteer-grid', volunteerEvents, 'volunteerEvents');
   renderGrid('team-grid', teamEvents, 'teamEvents');
-  renderSportsGrid('all');
+  var _af = document.querySelector('[data-sports-filter].active'); renderSportsGrid(_af ? _af.getAttribute('data-sports-filter') : 'all');
       // Update upcoming events count to exclude past events
       var upcomingCount = [sfEvents, volunteerEvents, teamEvents].reduce(function(sum, arr) { return sum + arr.filter(function(e) { return !isEventPast(e.date); }).length; }, 0);
       var statCards = document.querySelectorAll('.stat-card');
