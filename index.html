@@ -2125,7 +2125,7 @@ fetch('/api/quotes')
 <div class="main">
 
   <!-- Stats -->
-  <div class="stats-bar">
+  <div class="stats-bar" id="stats-bar">
     <div class="stat-card orange">
       <div class="number">22</div>
       <div class="label">Upcoming Events</div>
@@ -3099,6 +3099,10 @@ document.querySelectorAll('.tab').forEach(tab => {
     document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
     tab.classList.add('active');
     document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
+     var evTabs = ['events','volunteer','team','happyhour','past'];
+     var sb = document.getElementById('stats-bar'); var eb = document.getElementById('export-bar');
+     if (evTabs.indexOf(tab.dataset.tab) !== -1) { if(sb) sb.style.display=''; if(eb) eb.style.display=''; }
+     else { if(sb) sb.style.display='none'; if(eb) eb.style.display='none'; }
     if (tab.dataset.tab === 'calendar') try { renderCalendar(); } catch(e) {}
     if (tab.dataset.tab === 'happyhour') try { drawWheel(); renderHHList(); } catch(e) {}
     if (tab.dataset.tab === 'snacks') try { renderSnacks(); } catch(e) {}
