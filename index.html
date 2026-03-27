@@ -1723,6 +1723,60 @@
 }
 .btn-create-event:hover { background: var(--accent2); }
 
+
+    /* Sports tiles */
+    .sports-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 20px;
+    }
+    .sports-tile {
+      background: var(--card);
+      border-radius: 14px;
+      padding: 24px;
+      border-left: 5px solid var(--team-color, var(--forest));
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .sports-tile:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+    }
+    .sports-logo {
+      font-size: 32px;
+      margin-bottom: 8px;
+    }
+    .sports-tile h3 {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text);
+      margin: 0 0 4px 0;
+    }
+    .sports-league {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--team-color, var(--forest));
+      margin-bottom: 4px;
+    }
+    .sports-venue {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 14px;
+    }
+    .sports-games {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .sports-game {
+      font-size: 13px;
+      color: var(--text);
+      padding: 6px 10px;
+      background: var(--sand);
+      border-radius: 6px;
+    }
+
 </style>
 </head>
 <body>
@@ -1796,6 +1850,87 @@
     <div class="marquee-set" id="marquee-set-2" aria-hidden="true"></div>
   </div>
 </div>
+
+   <!-- ===== SPORTS TAB ===== -->
+   <div class="tab-content" id="tab-sports">
+     <div class="section-header">
+       <h2>Bay Area Sports</h2>
+     </div>
+     <p style="color:var(--text-muted);font-size:13px;margin-bottom:20px;font-style:italic;">Upcoming home games for Bay Area teams. Great for group outings!</p>
+     <div class="sports-grid">
+
+       <div class="sports-tile" style="--team-color:#FD5A1E;">
+         <div class="sports-logo">&#9918;</div>
+         <h3>SF Giants</h3>
+         <div class="sports-league">MLB</div>
+         <div class="sports-venue">Oracle Park, SF</div>
+         <div class="sports-games" id="giants-games">
+           <div class="sports-game">Apr 2 - vs Mets</div>
+           <div class="sports-game">Apr 3 - vs Mets</div>
+           <div class="sports-game">Apr 4 - vs Mets</div>
+           <div class="sports-game">Apr 5 - vs Mets</div>
+           <div class="sports-game">Apr 6 - vs Phillies</div>
+         </div>
+       </div>
+
+       <div class="sports-tile" style="--team-color:#1D428A;">
+         <div class="sports-logo">&#127936;</div>
+         <h3>Warriors</h3>
+         <div class="sports-league">NBA</div>
+         <div class="sports-venue">Chase Center, SF</div>
+         <div class="sports-games" id="warriors-games">
+           <div class="sports-game">Apr 1 - vs Spurs</div>
+           <div class="sports-game">Apr 2 - vs Cavaliers</div>
+           <div class="sports-game">Apr 5 - vs Rockets</div>
+           <div class="sports-game">Apr 7 - vs Kings</div>
+           <div class="sports-game">Apr 9 - vs Lakers</div>
+         </div>
+       </div>
+
+       <div class="sports-tile" style="--team-color:#006D75;">
+         <div class="sports-logo">&#127945;</div>
+         <h3>SJ Sharks</h3>
+         <div class="sports-league">NHL</div>
+         <div class="sports-venue">SAP Center, SJ</div>
+         <div class="sports-games" id="sharks-games">
+           <div class="sports-game">Apr 1 - vs Ducks</div>
+           <div class="sports-game">Apr 2 - vs Maple Leafs</div>
+           <div class="sports-game">Apr 4 - vs Predators</div>
+           <div class="sports-game">Apr 6 - vs Blackhawks</div>
+           <div class="sports-game">Apr 8 - TBD</div>
+           <div class="sports-game">Apr 11 - vs Canucks</div>
+         </div>
+       </div>
+
+       <div class="sports-tile" style="--team-color:#E31837;">
+         <div class="sports-logo">&#9917;</div>
+         <h3>Bay FC</h3>
+         <div class="sports-league">NWSL</div>
+         <div class="sports-venue">PayPal Park, SJ</div>
+         <div class="sports-games" id="bayfc-games">
+           <div class="sports-game">Apr 5 - vs Washington Spirit</div>
+           <div class="sports-game">May 10 - vs Utah Royals</div>
+           <div class="sports-game">May 15 - vs Boston Legacy</div>
+           <div class="sports-game">May 24 - vs Chicago Stars</div>
+         </div>
+       </div>
+
+       <div class="sports-tile" style="--team-color:#0067B1;">
+         <div class="sports-logo">&#9917;</div>
+         <h3>SJ Earthquakes</h3>
+         <div class="sports-league">MLS</div>
+         <div class="sports-venue">PayPal Park, SJ</div>
+         <div class="sports-games" id="quakes-games">
+           <div class="sports-game">Apr 4 - vs San Diego FC</div>
+           <div class="sports-game">Apr 22 - vs Austin FC</div>
+           <div class="sports-game">May 9 - vs Vancouver</div>
+           <div class="sports-game">May 16 - vs FC Dallas</div>
+         </div>
+       </div>
+
+     </div>
+   </div>
+
 <script>
 // Default quotes — used as fallback if server has none
       var defaultQuotes = [
@@ -1855,6 +1990,7 @@ fetch('/api/quotes')
   <div class="tab" data-tab="team">Team Building <span class="count" id="team-count">8</span></div>
   <div class="tab" data-tab="happyhour">Happy Hour</div>
   <div class="tab" data-tab="calendar">Calendar</div>
+<div class="tab" data-tab="sports">Sports</div>
   <div class="tab" data-tab="suggestions">Suggestions <span class="count" id="suggestions-count">0</span></div>
   <div class="tab" data-tab="snacks">Snacks 🍿</div>
   <div class="tab" data-tab="bylaws">Bylaws & Charter <span class="count">8</span></div>
