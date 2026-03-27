@@ -7,7 +7,7 @@
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@300;400;500;600;700;800&family=DM+Serif+Display&display=swap');
 
-  * { margin: 0; padding: 0; box-sizin border-box; } 
+  * { margin: 0; padding: 0; box-sizin border-box; }
 
   :root  {
     --bg: #F5F1EA;
@@ -1723,19 +1723,6 @@
 }
 .btn-create-event:hover { background: var(--accent2); }
 
-
-    /* Sports team colors */
-    .event-card.sports-giants .type-stripe { background: #FD5A1E; }
-    .event-card.sports-warriors .type-stripe { background: #1D428A; }
-    .event-card.sports-sharks .type-stripe { background: #006D75; }
-    .event-card.sports-bayfc .type-stripe { background: #E31837; }
-    .event-card.sports-quakes .type-stripe { background: #0067B1; }
-    .tag.giants { background: rgba(253,90,30,0.1); color: #FD5A1E; }
-    .tag.warriors { background: rgba(29,66,138,0.1); color: #1D428A; }
-    .tag.sharks { background: rgba(0,109,117,0.1); color: #006D75; }
-    .tag.bayfc { background: rgba(227,24,55,0.1); color: #E31837; }
-    .tag.quakes { background: rgba(0,103,177,0.1); color: #0067B1; }
-
 </style>
 </head>
 <body>
@@ -1809,25 +1796,106 @@
     <div class="marquee-set" id="marquee-set-2" aria-hidden="true"></div>
   </div>
 </div>
+<script>
+// Default quotes — used as fallback if server has none
+      var defaultQuotes = [
+        {emoji: "\ud83c\udff9", text: "So are we making a partiful for this archery thing?", author: "Rangaraj, #fppc"},
+        {emoji: "\ud83c\udf1f", text: "This got serious", author: "Rangaraj, seeing the FPPC channel for the first time"},
+        {emoji: "\ud83c\udf89", text: "It was formed because people were having fun wrong.", author: "Sophie, founding the FPPC"},
+        {emoji: "\ud83c\udf7b", text: "This might be the worst ever doordash laziness", author: "Bharat, #hub-sf"},
+        {emoji: "\ud83e\udde2", text: "Does anyone feel strongly about me bringing beanie in tomorrow?", author: "Alec, #hub-sf"},
+        {emoji: "\ud83c\udfb5", text: "This music should be played in a soulcycle class", author: "Sophie, #hub-sf"},
+        {emoji: "\ud83c\udfc0", text: "I think the best part is Alec has Michigan winning it all in his bracket", author: "Bharat, #hub-sf"},
+        {emoji: "\u2615", text: "Does anyone want to get an espresso and a metaphorical cigarette with me?", author: "Ranjit, #hub-sf"},
+        {emoji: "\ud83d\udcac", text: "When are we doing the goodbye office happy hour?", author: "Ranjit, asking the real questions"},
+        {emoji: "\ud83e\udd1d", text: "We have struck a deal with Evelyn. 70% attendance or no ice machine.", author: "Shreyas, #hub-sf"},
+        {emoji: "\ud83c\udf54", text: "Lunch as a human construct \u2014 yes. Lunch as a fermat social event \u2014 no.", author: "Bharat, #hub-sf"},
+        {emoji: "\ud83d\ude80", text: "Sicko mode", author: "Rangaraj, reacting to the FPPC bylaws"}
+      ];
 
-   <!-- ===== SPORTS TAB ===== -->
-<div id="tab-sports" class="tab-content" style="display:none;">
-  <div class="section-header">
-    <h2>Upcoming Games</h2>
-    <p>Vote for the games you want to attend with the team!</p>
-  </div>
-  <div class="filter-bar">
-    <button class="filter-btn active" data-sports-filter="all">All Teams</button>
-    <button class="filter-btn" data-sports-filter="giants">Giants</button>
-    <button class="filter-btn" data-sports-filter="warriors">Warriors</button>
-    <button class="filter-btn" data-sports-filter="sharks">Sharks</button>
-    <button class="filter-btn" data-sports-filter="bayfc">Bay FC</button>
-    <button class="filter-btn" data-sports-filter="quakes">Earthquakes</button>
-  </div>
-  <div class="events-grid" id="sports-grid"></div>
+function renderMarquee(quotes) {
+  var html = '';
+  quotes.forEach(function(q) {
+    html += '<span>' + q.emoji + ' \u201c' + q.text + '\u201d \u2014 ' + q.author + '</span>';
+  });
+  document.getElementById('marquee-set-1').innerHTML = html;
+  document.getElementById('marquee-set-2').innerHTML = html;
+  // Set speed based on content width
+  requestAnimationFrame(function() {
+    var track = document.getElementById('marquee-track');
+    var set = document.getElementById('marquee-set-1');
+    if (set) {
+      var setWidth = set.offsetWidth;
+      var pxPerSec = 40;
+      var duration = setWidth / pxPerSec;
+      track.style.animationDuration = duration + 's';
+    }
+  });
+}
+
+// Load quotes from server, fall back to defaults
+fetch('/api/quotes')
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    if (data && Array.isArray(data) && data.length > 0) {
+      renderMarquee(data);
+    } else {
+      renderMarquee(defaultQuotes);
+    }
+  })
+  .catch(function() {
+    renderMarquee(defaultQuotes);
+  });
+</script>
+
+<!-- Tabs -->
+<div class="tabs">
+  <div class="tab active" data-tab="events">SF Events <span class="count" id="events-count">22</span></div>
+  <div class="tab" data-tab="volunteer">Volunteer <span class="count" id="volunteer-count">5</span></div>
+  <div class="tab" data-tab="team">Team Building <span class="count" id="team-count">8</span></div>
+  <div class="tab" data-tab="happyhour">Happy Hour</div>
+  <div class="tab" data-tab="calendar">Calendar</div>
+  <div class="tab" data-tab="suggestions">Suggestions <span class="count" id="suggestions-count">0</span></div>
+  <div class="tab" data-tab="snacks">Snacks 🍿</div>
+  <div class="tab" data-tab="bylaws">Bylaws & Charter <span class="count">8</span></div>
+  <div class="tab" data-tab="past" style="opacity:0.6;">📁 Past Events <span class="count" id="past-count">0</span></div>
 </div>
 
-<!-- ===== PAST EVENTS TAB ===== -->
+<!-- Main Content -->
+<div class="main">
+
+  <!-- Stats -->
+  <div class="stats-bar">
+    <div class="stat-card orange">
+      <div class="number">22</div>
+      <div class="label">Upcoming Events</div>
+    </div>
+    <div class="stat-card yellow">
+      <div class="number">0</div>
+      <div class="label">This Month's Events</div>
+    </div>
+    <div class="stat-card blue">
+      <div class="number">16</div>
+      <div class="label">SF Team Members</div>
+    </div>
+    <div class="stat-card budget" id="budget-card">
+      <span class="ramp-badge">Ramp</span>
+      <div class="number" id="budget-remaining">—</div>
+      <div class="label">Social Budget Left</div>
+      <div class="budget-bar-track">
+        <div class="budget-bar-fill" id="budget-bar-fill" style="width:0%;background:var(--forest);"></div>
+      </div>
+      <div class="budget-detail" id="budget-detail">Loading from Ramp...</div>
+    </div>
+  </div>
+
+  <!-- Export votes bar (admin only) -->
+  <div class="export-bar admin-only-flex" id="export-bar">
+    <div class="export-info">📊 <strong>Vote Tracker</strong> — Export current vote data so Claude can monitor and notify #fppc when events hit 4 votes.</div>
+    <button class="btn btn-primary" onclick="exportVotesCSV()" style="font-size:12px;">📥 Export Votes CSV</button>
+  </div>
+
+  <!-- ===== PAST EVENTS TAB ===== -->
   <div class="tab-content" id="tab-past">
     <div class="section-header">
       <h2><span class="emoji">📁</span> Past Events</h2>
@@ -2771,10 +2839,6 @@ document.querySelectorAll('.tab').forEach(tab => {
     document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
     tab.classList.add('active');
     document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
-     var evTabs = ['events','volunteer','team','happyhour','past'];
-     var sb = document.getElementById('stats-bar'); var eb = document.getElementById('export-bar');
-     if (evTabs.indexOf(tab.dataset.tab) !== -1) { if(sb) sb.style.display=''; if(eb) eb.style.display=''; }
-     else { if(sb) sb.style.display='none'; if(eb) eb.style.display='none'; }
     if (tab.dataset.tab === 'calendar') try { renderCalendar(); } catch(e) {}
     if (tab.dataset.tab === 'happyhour') try { drawWheel(); renderHHList(); } catch(e) {}
     if (tab.dataset.tab === 'snacks') try { renderSnacks(); } catch(e) {}
@@ -4687,82 +4751,6 @@ function submitCreateEvent() {
   window.open(url, '_blank');
   closeCreateEvent();
 }
-
-
-// ===== SPORTS TAB =====
-var sportsGames = [
-  {team:"giants",label:"Giants",sport:"MLB",title:"Giants vs. Mets",date:"Apr 2, 2026",day:"Thu",location:"Oracle Park, SF",url:"https://www.mlb.com/giants/schedule",votes:0},
-  {team:"giants",label:"Giants",sport:"MLB",title:"Giants vs. Mets",date:"Apr 3, 2026",day:"Fri",location:"Oracle Park, SF",url:"https://www.mlb.com/giants/schedule",votes:0},
-  {team:"giants",label:"Giants",sport:"MLB",title:"Giants vs. Mets",date:"Apr 4, 2026",day:"Sat",location:"Oracle Park, SF",url:"https://www.mlb.com/giants/schedule",votes:0},
-  {team:"giants",label:"Giants",sport:"MLB",title:"Giants vs. Mets",date:"Apr 5, 2026",day:"Sun",location:"Oracle Park, SF",url:"https://www.mlb.com/giants/schedule",votes:0},
-  {team:"giants",label:"Giants",sport:"MLB",title:"Giants vs. Phillies",date:"Apr 6, 2026",day:"Mon",location:"Oracle Park, SF",url:"https://www.mlb.com/giants/schedule",votes:0},
-  {team:"warriors",label:"Warriors",sport:"NBA",title:"Warriors vs. Spurs",date:"Apr 1, 2026",day:"Wed",location:"Chase Center, SF",url:"https://www.nba.com/warriors/schedule",votes:0},
-  {team:"warriors",label:"Warriors",sport:"NBA",title:"Warriors vs. Cavaliers",date:"Apr 2, 2026",day:"Thu",location:"Chase Center, SF",url:"https://www.nba.com/warriors/schedule",votes:0},
-  {team:"warriors",label:"Warriors",sport:"NBA",title:"Warriors vs. Rockets",date:"Apr 5, 2026",day:"Sun",location:"Chase Center, SF",url:"https://www.nba.com/warriors/schedule",votes:0},
-  {team:"warriors",label:"Warriors",sport:"NBA",title:"Warriors vs. Kings",date:"Apr 7, 2026",day:"Tue",location:"Chase Center, SF",url:"https://www.nba.com/warriors/schedule",votes:0},
-  {team:"warriors",label:"Warriors",sport:"NBA",title:"Warriors vs. Lakers",date:"Apr 9, 2026",day:"Thu",location:"Chase Center, SF",url:"https://www.nba.com/warriors/schedule",votes:0},
-  {team:"sharks",label:"Sharks",sport:"NHL",title:"Sharks vs. Ducks",date:"Apr 1, 2026",day:"Wed",location:"SAP Center, San Jose",url:"https://www.nhl.com/sharks/schedule",votes:0},
-  {team:"sharks",label:"Sharks",sport:"NHL",title:"Sharks vs. Maple Leafs",date:"Apr 2, 2026",day:"Thu",location:"SAP Center, San Jose",url:"https://www.nhl.com/sharks/schedule",votes:0},
-  {team:"sharks",label:"Sharks",sport:"NHL",title:"Sharks vs. Predators",date:"Apr 4, 2026",day:"Sat",location:"SAP Center, San Jose",url:"https://www.nhl.com/sharks/schedule",votes:0},
-  {team:"sharks",label:"Sharks",sport:"NHL",title:"Sharks vs. Blackhawks",date:"Apr 6, 2026",day:"Mon",location:"SAP Center, San Jose",url:"https://www.nhl.com/sharks/schedule",votes:0},
-  {team:"sharks",label:"Sharks",sport:"NHL",title:"Sharks - TBD",date:"Apr 8, 2026",day:"Wed",location:"SAP Center, San Jose",url:"https://www.nhl.com/sharks/schedule",votes:0},
-  {team:"sharks",label:"Sharks",sport:"NHL",title:"Sharks vs. Canucks",date:"Apr 11, 2026",day:"Sat",location:"SAP Center, San Jose",url:"https://www.nhl.com/sharks/schedule",votes:0},
-  {team:"bayfc",label:"Bay FC",sport:"NWSL",title:"Bay FC vs. Washington Spirit",date:"Apr 5, 2026",day:"Sun",location:"PayPal Park, San Jose",url:"https://www.nwslsoccer.com/bay-fc",votes:0},
-  {team:"bayfc",label:"Bay FC",sport:"NWSL",title:"Bay FC vs. Utah Royals",date:"May 10, 2026",day:"Sun",location:"PayPal Park, San Jose",url:"https://www.nwslsoccer.com/bay-fc",votes:0},
-  {team:"bayfc",label:"Bay FC",sport:"NWSL",title:"Bay FC vs. Boston Legacy",date:"May 15, 2026",day:"Fri",location:"PayPal Park, San Jose",url:"https://www.nwslsoccer.com/bay-fc",votes:0},
-  {team:"bayfc",label:"Bay FC",sport:"NWSL",title:"Bay FC vs. Chicago Stars",date:"May 24, 2026",day:"Sun",location:"PayPal Park, San Jose",url:"https://www.nwslsoccer.com/bay-fc",votes:0},
-  {team:"quakes",label:"Earthquakes",sport:"MLS",title:"Earthquakes vs. San Diego FC",date:"Apr 4, 2026",day:"Sat",location:"PayPal Park, San Jose",url:"https://www.sjearthquakes.com/schedule",votes:0},
-  {team:"quakes",label:"Earthquakes",sport:"MLS",title:"Earthquakes vs. Austin FC",date:"Apr 22, 2026",day:"Wed",location:"PayPal Park, San Jose",url:"https://www.sjearthquakes.com/schedule",votes:0},
-  {team:"quakes",label:"Earthquakes",sport:"MLS",title:"Earthquakes vs. Vancouver",date:"May 9, 2026",day:"Sat",location:"PayPal Park, San Jose",url:"https://www.sjearthquakes.com/schedule",votes:0},
-  {team:"quakes",label:"Earthquakes",sport:"MLS",title:"Earthquakes vs. FC Dallas",date:"May 16, 2026",day:"Sat",location:"PayPal Park, San Jose",url:"https://www.sjearthquakes.com/schedule",votes:0}
-];
-
-function renderSportsCards(filter) {
-  var grid = document.getElementById("sports-grid");
-  if (!grid) return;
-  var games = sportsGames;
-  if (filter !== "all") games = sportsGames.filter(function(g){return g.team===filter;});
-  var html = "";
-  games.forEach(function(game, i) {
-    var origIdx = sportsGames.indexOf(game);
-    var teamClass = "sports-" + game.team;
-    var count = game.votes || 0;
-    html += '<div class="event-card ' + teamClass + '" data-type="' + teamClass + '">' +
-      '<div class="type-stripe"></div>' +
-      '<div><span class="tag ' + game.team + '">' + game.label + ' \u2022 ' + game.sport + '</span></div>' +
-      '<h3>' + game.title + '</h3>' +
-      '<div class="meta">' +
-        '<div>\ud83d\udcc5 ' + game.day + ', ' + game.date + '</div>' +
-        '<div>\ud83d\udccd ' + game.location + '</div>' +
-      '</div>' +
-      '<div class="card-actions">' +
-        '<button class="vote-btn" onclick="voteSportsGame(' + origIdx + ')">\ud83c\udfc6 Vote (' + count + ')</button>' +
-        '<a class="learn-more-btn" href="' + game.url + '" target="_blank">Learn More \u2197</a>' +
-      '</div>' +
-    '</div>';
-  });
-  grid.innerHTML = html;
-}
-
-function voteSportsGame(idx) {
-  sportsGames[idx].votes = (sportsGames[idx].votes || 0) + 1;
-  var activeFilter = document.querySelector("[data-sports-filter].active");
-  var f = activeFilter ? activeFilter.getAttribute("data-sports-filter") : "all";
-  renderSportsCards(f);
-}
-
-document.querySelectorAll("[data-sports-filter]").forEach(function(btn) {
-  btn.addEventListener("click", function() {
-    document.querySelectorAll("[data-sports-filter]").forEach(function(b){b.classList.remove("active");});
-    btn.classList.add("active");
-    renderSportsCards(btn.getAttribute("data-sports-filter"));
-  });
-});
-
-// Initialize sports grid on load
-renderSportsCards("all");
-// ===== END SPORTS TAB =====
-
 </script>
 </body>
 </html>
