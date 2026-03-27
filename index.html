@@ -1727,54 +1727,123 @@
     /* Sports tiles */
     .sports-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-      gap: 20px;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 24px;
     }
     .sports-tile {
       background: var(--card);
-      border-radius: 14px;
-      padding: 24px;
-      border-left: 5px solid var(--team-color, var(--forest));
+      border-radius: 16px;
+      overflow: hidden;
       transition: transform 0.15s, box-shadow 0.15s;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.04);
     }
     .sports-tile:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
     }
-    .sports-logo {
-      font-size: 32px;
-      margin-bottom: 8px;
+    .sports-tile-header {
+      background: var(--team-color, var(--forest));
+      padding: 20px 24px 16px;
+      color: #fff;
+      position: relative;
     }
-    .sports-tile h3 {
-      font-size: 18px;
+    .sports-tile-header h3 {
+      font-size: 20px;
+      font-weight: 800;
+      margin: 0;
+      color: #fff;
+      letter-spacing: -0.3px;
+    }
+    .sports-tile-header .sports-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 4px;
+      font-size: 12px;
+      opacity: 0.9;
+    }
+    .sports-tile-header .sports-league-badge {
+      background: rgba(255,255,255,0.25);
+      padding: 2px 8px;
+      border-radius: 4px;
       font-weight: 700;
-      color: var(--text);
-      margin: 0 0 4px 0;
+      font-size: 10px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
     }
-    .sports-league {
-      font-size: 11px;
-      font-weight: 600;
+    .sports-tile-header .sports-venue {
+      font-size: 12px;
+      opacity: 0.85;
+    }
+    .sports-tile-header .sports-icon {
+      position: absolute;
+      top: 16px;
+      right: 20px;
+      font-size: 28px;
+      opacity: 0.4;
+    }
+    .sports-tile-body {
+      padding: 16px 24px 20px;
+    }
+    .sports-next-label {
+      font-size: 10px;
+      font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 1px;
-      color: var(--team-color, var(--forest));
-      margin-bottom: 4px;
-    }
-    .sports-venue {
-      font-size: 12px;
       color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+    .sports-next-game {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+      padding: 10px 14px;
+      background: linear-gradient(135deg, rgba(41,67,57,0.06), rgba(41,67,57,0.02));
+      border-radius: 10px;
+      border-left: 3px solid var(--team-color, var(--forest));
       margin-bottom: 14px;
     }
-    .sports-games {
+    .sports-next-game .game-date {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-weight: 500;
+      display: block;
+      margin-bottom: 2px;
+    }
+    .sports-games-list {
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 0;
     }
-    .sports-game {
+    .sports-games-list .game-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border);
       font-size: 13px;
+    }
+    .sports-games-list .game-row:last-child {
+      border-bottom: none;
+    }
+    .sports-games-list .game-date-col {
+      color: var(--text-muted);
+      font-size: 12px;
+      font-weight: 500;
+      min-width: 50px;
+    }
+    .sports-games-list .game-opponent {
       color: var(--text);
-      padding: 6px 10px;
-      background: var(--sand);
-      border-radius: 6px;
+      font-weight: 500;
+      flex: 1;
+      text-align: right;
+    }
+    .sports-game-count {
+      font-size: 11px;
+      color: var(--text-muted);
+      text-align: center;
+      padding-top: 10px;
+      font-style: italic;
     }
 
 </style>
@@ -1854,77 +1923,132 @@
    <!-- ===== SPORTS TAB ===== -->
    <div class="tab-content" id="tab-sports">
      <div class="section-header">
-       <h2>Bay Area Sports</h2>
+       <h2><span class="emoji">🏟</span> Bay Area Sports</h2>
      </div>
-     <p style="color:var(--text-muted);font-size:13px;margin-bottom:20px;font-style:italic;">Upcoming home games for Bay Area teams. Great for group outings!</p>
+     <p style="color:var(--text-muted);font-size:13px;margin-bottom:24px;font-style:italic;">Upcoming home games for Bay Area teams. Perfect for team outings!</p>
      <div class="sports-grid">
 
        <div class="sports-tile" style="--team-color:#FD5A1E;">
-         <div class="sports-logo">&#9918;</div>
-         <h3>SF Giants</h3>
-         <div class="sports-league">MLB</div>
-         <div class="sports-venue">Oracle Park, SF</div>
-         <div class="sports-games" id="giants-games">
-           <div class="sports-game">Apr 2 - vs Mets</div>
-           <div class="sports-game">Apr 3 - vs Mets</div>
-           <div class="sports-game">Apr 4 - vs Mets</div>
-           <div class="sports-game">Apr 5 - vs Mets</div>
-           <div class="sports-game">Apr 6 - vs Phillies</div>
+         <div class="sports-tile-header">
+           <span class="sports-icon">⚾</span>
+           <h3>SF Giants</h3>
+           <div class="sports-meta">
+             <span class="sports-league-badge">MLB</span>
+             <span class="sports-venue">Oracle Park, SF</span>
+           </div>
+         </div>
+         <div class="sports-tile-body">
+           <div class="sports-next-label">Next Home Game</div>
+           <div class="sports-next-game">
+             <span class="game-date">Thursday, Apr 2</span>
+             vs New York Mets
+           </div>
+           <div class="sports-games-list">
+             <div class="game-row"><span class="game-date-col">Apr 3</span><span class="game-opponent">vs Mets</span></div>
+             <div class="game-row"><span class="game-date-col">Apr 4</span><span class="game-opponent">vs Mets</span></div>
+             <div class="game-row"><span class="game-date-col">Apr 5</span><span class="game-opponent">vs Mets</span></div>
+             <div class="game-row"><span class="game-date-col">Apr 6</span><span class="game-opponent">vs Phillies</span></div>
+           </div>
+           <div class="sports-game-count">5 home games upcoming</div>
          </div>
        </div>
 
        <div class="sports-tile" style="--team-color:#1D428A;">
-         <div class="sports-logo">&#127936;</div>
-         <h3>Warriors</h3>
-         <div class="sports-league">NBA</div>
-         <div class="sports-venue">Chase Center, SF</div>
-         <div class="sports-games" id="warriors-games">
-           <div class="sports-game">Apr 1 - vs Spurs</div>
-           <div class="sports-game">Apr 2 - vs Cavaliers</div>
-           <div class="sports-game">Apr 5 - vs Rockets</div>
-           <div class="sports-game">Apr 7 - vs Kings</div>
-           <div class="sports-game">Apr 9 - vs Lakers</div>
+         <div class="sports-tile-header">
+           <span class="sports-icon">🏀</span>
+           <h3>Warriors</h3>
+           <div class="sports-meta">
+             <span class="sports-league-badge">NBA</span>
+             <span class="sports-venue">Chase Center, SF</span>
+           </div>
+         </div>
+         <div class="sports-tile-body">
+           <div class="sports-next-label">Next Home Game</div>
+           <div class="sports-next-game">
+             <span class="game-date">Wednesday, Apr 1</span>
+             vs San Antonio Spurs
+           </div>
+           <div class="sports-games-list">
+             <div class="game-row"><span class="game-date-col">Apr 2</span><span class="game-opponent">vs Cavaliers</span></div>
+             <div class="game-row"><span class="game-date-col">Apr 5</span><span class="game-opponent">vs Rockets</span></div>
+             <div class="game-row"><span class="game-date-col">Apr 7</span><span class="game-opponent">vs Kings</span></div>
+             <div class="game-row"><span class="game-date-col">Apr 9</span><span class="game-opponent">vs Lakers</span></div>
+           </div>
+           <div class="sports-game-count">5 home games upcoming</div>
          </div>
        </div>
 
        <div class="sports-tile" style="--team-color:#006D75;">
-         <div class="sports-logo">&#127945;</div>
-         <h3>SJ Sharks</h3>
-         <div class="sports-league">NHL</div>
-         <div class="sports-venue">SAP Center, SJ</div>
-         <div class="sports-games" id="sharks-games">
-           <div class="sports-game">Apr 1 - vs Ducks</div>
-           <div class="sports-game">Apr 2 - vs Maple Leafs</div>
-           <div class="sports-game">Apr 4 - vs Predators</div>
-           <div class="sports-game">Apr 6 - vs Blackhawks</div>
-           <div class="sports-game">Apr 8 - TBD</div>
-           <div class="sports-game">Apr 11 - vs Canucks</div>
+         <div class="sports-tile-header">
+           <span class="sports-icon">🏒</span>
+           <h3>SJ Sharks</h3>
+           <div class="sports-meta">
+             <span class="sports-league-badge">NHL</span>
+             <span class="sports-venue">SAP Center, San Jose</span>
+           </div>
+         </div>
+         <div class="sports-tile-body">
+           <div class="sports-next-label">Next Home Game</div>
+           <div class="sports-next-game">
+             <span class="game-date">Wednesday, Apr 1</span>
+             vs Anaheim Ducks
+           </div>
+           <div class="sports-games-list">
+             <div class="game-row"><span class="game-date-col">Apr 2</span><span class="game-opponent">vs Maple Leafs</span></div>
+             <div class="game-row"><span class="game-date-col">Apr 4</span><span class="game-opponent">vs Predators</span></div>
+             <div class="game-row"><span class="game-date-col">Apr 6</span><span class="game-opponent">vs Blackhawks</span></div>
+             <div class="game-row"><span class="game-date-col">Apr 8</span><span class="game-opponent">TBD</span></div>
+             <div class="game-row"><span class="game-date-col">Apr 11</span><span class="game-opponent">vs Canucks</span></div>
+           </div>
+           <div class="sports-game-count">6 home games upcoming</div>
          </div>
        </div>
 
        <div class="sports-tile" style="--team-color:#E31837;">
-         <div class="sports-logo">&#9917;</div>
-         <h3>Bay FC</h3>
-         <div class="sports-league">NWSL</div>
-         <div class="sports-venue">PayPal Park, SJ</div>
-         <div class="sports-games" id="bayfc-games">
-           <div class="sports-game">Apr 5 - vs Washington Spirit</div>
-           <div class="sports-game">May 10 - vs Utah Royals</div>
-           <div class="sports-game">May 15 - vs Boston Legacy</div>
-           <div class="sports-game">May 24 - vs Chicago Stars</div>
+         <div class="sports-tile-header">
+           <span class="sports-icon">⚽</span>
+           <h3>Bay FC</h3>
+           <div class="sports-meta">
+             <span class="sports-league-badge">NWSL</span>
+             <span class="sports-venue">PayPal Park, San Jose</span>
+           </div>
+         </div>
+         <div class="sports-tile-body">
+           <div class="sports-next-label">Next Home Game</div>
+           <div class="sports-next-game">
+             <span class="game-date">Saturday, Apr 5</span>
+             vs Washington Spirit
+           </div>
+           <div class="sports-games-list">
+             <div class="game-row"><span class="game-date-col">May 10</span><span class="game-opponent">vs Utah Royals</span></div>
+             <div class="game-row"><span class="game-date-col">May 15</span><span class="game-opponent">vs Boston Legacy</span></div>
+             <div class="game-row"><span class="game-date-col">May 24</span><span class="game-opponent">vs Chicago Stars</span></div>
+           </div>
+           <div class="sports-game-count">4 home games upcoming</div>
          </div>
        </div>
 
        <div class="sports-tile" style="--team-color:#0067B1;">
-         <div class="sports-logo">&#9917;</div>
-         <h3>SJ Earthquakes</h3>
-         <div class="sports-league">MLS</div>
-         <div class="sports-venue">PayPal Park, SJ</div>
-         <div class="sports-games" id="quakes-games">
-           <div class="sports-game">Apr 4 - vs San Diego FC</div>
-           <div class="sports-game">Apr 22 - vs Austin FC</div>
-           <div class="sports-game">May 9 - vs Vancouver</div>
-           <div class="sports-game">May 16 - vs FC Dallas</div>
+         <div class="sports-tile-header">
+           <span class="sports-icon">⚽</span>
+           <h3>SJ Earthquakes</h3>
+           <div class="sports-meta">
+             <span class="sports-league-badge">MLS</span>
+             <span class="sports-venue">PayPal Park, San Jose</span>
+           </div>
+         </div>
+         <div class="sports-tile-body">
+           <div class="sports-next-label">Next Home Game</div>
+           <div class="sports-next-game">
+             <span class="game-date">Saturday, Apr 4</span>
+             vs San Diego FC
+           </div>
+           <div class="sports-games-list">
+             <div class="game-row"><span class="game-date-col">Apr 22</span><span class="game-opponent">vs Austin FC</span></div>
+             <div class="game-row"><span class="game-date-col">May 9</span><span class="game-opponent">vs Vancouver</span></div>
+             <div class="game-row"><span class="game-date-col">May 16</span><span class="game-opponent">vs FC Dallas</span></div>
+           </div>
+           <div class="sports-game-count">4 home games upcoming</div>
          </div>
        </div>
 
