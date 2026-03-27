@@ -1724,7 +1724,17 @@
 .btn-create-event:hover { background: var(--accent2); }
 
 
-    
+    /* Sports team colors */
+    .event-card.sports-giants .type-stripe { background: #FD5A1E; }
+    .event-card.sports-warriors .type-stripe { background: #1D428A; }
+    .event-card.sports-sharks .type-stripe { background: #006D75; }
+    .event-card.sports-bayfc .type-stripe { background: #E31837; }
+    .event-card.sports-quakes .type-stripe { background: #0067B1; }
+    .tag.giants { background: rgba(253,90,30,0.1); color: #FD5A1E; }
+    .tag.warriors { background: rgba(29,66,138,0.1); color: #1D428A; }
+    .tag.sharks { background: rgba(0,109,117,0.1); color: #006D75; }
+    .tag.bayfc { background: rgba(227,24,55,0.1); color: #E31837; }
+    .tag.quakes { background: rgba(0,103,177,0.1); color: #0067B1; }
 
 </style>
 </head>
@@ -1800,7 +1810,24 @@
   </div>
 </div>
 
-   <!-- ===== PAST EVENTS TAB ===== -->
+   <!-- ===== SPORTS TAB ===== -->
+<div id="tab-sports" class="tab-content" style="display:none;">
+  <div class="section-header">
+    <h2>Upcoming Games</h2>
+    <p>Vote for the games you want to attend with the team!</p>
+  </div>
+  <div class="filter-bar">
+    <button class="filter-btn active" data-sports-filter="all">All Teams</button>
+    <button class="filter-btn" data-sports-filter="giants">Giants</button>
+    <button class="filter-btn" data-sports-filter="warriors">Warriors</button>
+    <button class="filter-btn" data-sports-filter="sharks">Sharks</button>
+    <button class="filter-btn" data-sports-filter="bayfc">Bay FC</button>
+    <button class="filter-btn" data-sports-filter="quakes">Earthquakes</button>
+  </div>
+  <div class="events-grid" id="sports-grid"></div>
+</div>
+
+<!-- ===== PAST EVENTS TAB ===== -->
   <div class="tab-content" id="tab-past">
     <div class="section-header">
       <h2><span class="emoji">📁</span> Past Events</h2>
@@ -4660,6 +4687,82 @@ function submitCreateEvent() {
   window.open(url, '_blank');
   closeCreateEvent();
 }
+
+
+// ===== SPORTS TAB =====
+var sportsGames = [
+  {team:"giants",label:"Giants",sport:"MLB",title:"Giants vs. Mets",date:"Apr 2, 2026",day:"Thu",location:"Oracle Park, SF",url:"https://www.mlb.com/giants/schedule",votes:0},
+  {team:"giants",label:"Giants",sport:"MLB",title:"Giants vs. Mets",date:"Apr 3, 2026",day:"Fri",location:"Oracle Park, SF",url:"https://www.mlb.com/giants/schedule",votes:0},
+  {team:"giants",label:"Giants",sport:"MLB",title:"Giants vs. Mets",date:"Apr 4, 2026",day:"Sat",location:"Oracle Park, SF",url:"https://www.mlb.com/giants/schedule",votes:0},
+  {team:"giants",label:"Giants",sport:"MLB",title:"Giants vs. Mets",date:"Apr 5, 2026",day:"Sun",location:"Oracle Park, SF",url:"https://www.mlb.com/giants/schedule",votes:0},
+  {team:"giants",label:"Giants",sport:"MLB",title:"Giants vs. Phillies",date:"Apr 6, 2026",day:"Mon",location:"Oracle Park, SF",url:"https://www.mlb.com/giants/schedule",votes:0},
+  {team:"warriors",label:"Warriors",sport:"NBA",title:"Warriors vs. Spurs",date:"Apr 1, 2026",day:"Wed",location:"Chase Center, SF",url:"https://www.nba.com/warriors/schedule",votes:0},
+  {team:"warriors",label:"Warriors",sport:"NBA",title:"Warriors vs. Cavaliers",date:"Apr 2, 2026",day:"Thu",location:"Chase Center, SF",url:"https://www.nba.com/warriors/schedule",votes:0},
+  {team:"warriors",label:"Warriors",sport:"NBA",title:"Warriors vs. Rockets",date:"Apr 5, 2026",day:"Sun",location:"Chase Center, SF",url:"https://www.nba.com/warriors/schedule",votes:0},
+  {team:"warriors",label:"Warriors",sport:"NBA",title:"Warriors vs. Kings",date:"Apr 7, 2026",day:"Tue",location:"Chase Center, SF",url:"https://www.nba.com/warriors/schedule",votes:0},
+  {team:"warriors",label:"Warriors",sport:"NBA",title:"Warriors vs. Lakers",date:"Apr 9, 2026",day:"Thu",location:"Chase Center, SF",url:"https://www.nba.com/warriors/schedule",votes:0},
+  {team:"sharks",label:"Sharks",sport:"NHL",title:"Sharks vs. Ducks",date:"Apr 1, 2026",day:"Wed",location:"SAP Center, San Jose",url:"https://www.nhl.com/sharks/schedule",votes:0},
+  {team:"sharks",label:"Sharks",sport:"NHL",title:"Sharks vs. Maple Leafs",date:"Apr 2, 2026",day:"Thu",location:"SAP Center, San Jose",url:"https://www.nhl.com/sharks/schedule",votes:0},
+  {team:"sharks",label:"Sharks",sport:"NHL",title:"Sharks vs. Predators",date:"Apr 4, 2026",day:"Sat",location:"SAP Center, San Jose",url:"https://www.nhl.com/sharks/schedule",votes:0},
+  {team:"sharks",label:"Sharks",sport:"NHL",title:"Sharks vs. Blackhawks",date:"Apr 6, 2026",day:"Mon",location:"SAP Center, San Jose",url:"https://www.nhl.com/sharks/schedule",votes:0},
+  {team:"sharks",label:"Sharks",sport:"NHL",title:"Sharks - TBD",date:"Apr 8, 2026",day:"Wed",location:"SAP Center, San Jose",url:"https://www.nhl.com/sharks/schedule",votes:0},
+  {team:"sharks",label:"Sharks",sport:"NHL",title:"Sharks vs. Canucks",date:"Apr 11, 2026",day:"Sat",location:"SAP Center, San Jose",url:"https://www.nhl.com/sharks/schedule",votes:0},
+  {team:"bayfc",label:"Bay FC",sport:"NWSL",title:"Bay FC vs. Washington Spirit",date:"Apr 5, 2026",day:"Sun",location:"PayPal Park, San Jose",url:"https://www.nwslsoccer.com/bay-fc",votes:0},
+  {team:"bayfc",label:"Bay FC",sport:"NWSL",title:"Bay FC vs. Utah Royals",date:"May 10, 2026",day:"Sun",location:"PayPal Park, San Jose",url:"https://www.nwslsoccer.com/bay-fc",votes:0},
+  {team:"bayfc",label:"Bay FC",sport:"NWSL",title:"Bay FC vs. Boston Legacy",date:"May 15, 2026",day:"Fri",location:"PayPal Park, San Jose",url:"https://www.nwslsoccer.com/bay-fc",votes:0},
+  {team:"bayfc",label:"Bay FC",sport:"NWSL",title:"Bay FC vs. Chicago Stars",date:"May 24, 2026",day:"Sun",location:"PayPal Park, San Jose",url:"https://www.nwslsoccer.com/bay-fc",votes:0},
+  {team:"quakes",label:"Earthquakes",sport:"MLS",title:"Earthquakes vs. San Diego FC",date:"Apr 4, 2026",day:"Sat",location:"PayPal Park, San Jose",url:"https://www.sjearthquakes.com/schedule",votes:0},
+  {team:"quakes",label:"Earthquakes",sport:"MLS",title:"Earthquakes vs. Austin FC",date:"Apr 22, 2026",day:"Wed",location:"PayPal Park, San Jose",url:"https://www.sjearthquakes.com/schedule",votes:0},
+  {team:"quakes",label:"Earthquakes",sport:"MLS",title:"Earthquakes vs. Vancouver",date:"May 9, 2026",day:"Sat",location:"PayPal Park, San Jose",url:"https://www.sjearthquakes.com/schedule",votes:0},
+  {team:"quakes",label:"Earthquakes",sport:"MLS",title:"Earthquakes vs. FC Dallas",date:"May 16, 2026",day:"Sat",location:"PayPal Park, San Jose",url:"https://www.sjearthquakes.com/schedule",votes:0}
+];
+
+function renderSportsCards(filter) {
+  var grid = document.getElementById("sports-grid");
+  if (!grid) return;
+  var games = sportsGames;
+  if (filter !== "all") games = sportsGames.filter(function(g){return g.team===filter;});
+  var html = "";
+  games.forEach(function(game, i) {
+    var origIdx = sportsGames.indexOf(game);
+    var teamClass = "sports-" + game.team;
+    var count = game.votes || 0;
+    html += '<div class="event-card ' + teamClass + '" data-type="' + teamClass + '">' +
+      '<div class="type-stripe"></div>' +
+      '<div><span class="tag ' + game.team + '">' + game.label + ' \u2022 ' + game.sport + '</span></div>' +
+      '<h3>' + game.title + '</h3>' +
+      '<div class="meta">' +
+        '<div>\ud83d\udcc5 ' + game.day + ', ' + game.date + '</div>' +
+        '<div>\ud83d\udccd ' + game.location + '</div>' +
+      '</div>' +
+      '<div class="card-actions">' +
+        '<button class="vote-btn" onclick="voteSportsGame(' + origIdx + ')">\ud83c\udfc6 Vote (' + count + ')</button>' +
+        '<a class="learn-more-btn" href="' + game.url + '" target="_blank">Learn More \u2197</a>' +
+      '</div>' +
+    '</div>';
+  });
+  grid.innerHTML = html;
+}
+
+function voteSportsGame(idx) {
+  sportsGames[idx].votes = (sportsGames[idx].votes || 0) + 1;
+  var activeFilter = document.querySelector("[data-sports-filter].active");
+  var f = activeFilter ? activeFilter.getAttribute("data-sports-filter") : "all";
+  renderSportsCards(f);
+}
+
+document.querySelectorAll("[data-sports-filter]").forEach(function(btn) {
+  btn.addEventListener("click", function() {
+    document.querySelectorAll("[data-sports-filter]").forEach(function(b){b.classList.remove("active");});
+    btn.classList.add("active");
+    renderSportsCards(btn.getAttribute("data-sports-filter"));
+  });
+});
+
+// Initialize sports grid on load
+renderSportsCards("all");
+// ===== END SPORTS TAB =====
+
 </script>
 </body>
 </html>
