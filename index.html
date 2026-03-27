@@ -1754,6 +1754,10 @@
   .tag.bayfc { background: rgba(227,24,55,0.1); color: #E31837; }
   .tag.quakes { background: rgba(0,103,177,0.1); color: #0067B1; }
 
+  /* Tab panel transition */
+  .tab-content.active { animation: fadeIn .2s ease-out; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
 </style>
 </head>
 <body>
@@ -3025,6 +3029,18 @@ function renderAllGrids() {
     }
   }
   try { renderVotesTab(); } catch(e) { console.warn('renderVotesTab error:', e); }
+  updateHeaderStats();
+}
+
+function updateHeaderStats() {
+  var totalVotes = 0;
+  Object.keys(voteData).forEach(function(k) {
+    var entry = voteData[k];
+    if (entry && entry.voters) totalVotes += entry.voters.length;
+  });
+  // Update total-votes element if present (safe no-op if element doesn't exist)
+  var tvEl = document.getElementById('total-votes');
+  if (tvEl) tvEl.textContent = totalVotes;
 }
 
 // Load any saved curated event edits before rendering
@@ -3160,6 +3176,18 @@ function saveVotes() {
   // Note: Google Sheets sync is done per-action in vote/unvote handlers via syncVoteToSheets()
 }
 
+// ========== FPPC STATE SYNC (for admin dashboard) ==========
+function syncFPPCState() {
+  fetch('/api/store/votes', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ data: voteData }),
+    credentials: 'include'
+  }).catch(function(e) { console.warn('FPPC state sync failed:', e); });
+}
+setInterval(syncFPPCState, 5 * 60 * 1000);
+setTimeout(syncFPPCState, 5000);
+
 function getVoteKey(source, id) {
   // source: "curated-sfEvents-0", "curated-volunteerEvents-2", "suggestion-3", "approved-1"
   return source + '-' + id;
@@ -3220,12 +3248,14 @@ function vote(btn, arrayName, index) {
     if (hasVoted(key, name)) {
       entry.voters = entry.voters.filter(v => v.toLowerCase() !== name.toLowerCase());
       saveVotes();
+      syncFPPCState();
       syncVoteToSheets('unvote', key, eventTitle, eventType, name);
       renderAllGrids();
       return;
     }
     entry.voters.push(name);
     saveVotes();
+    syncFPPCState();
     syncVoteToSheets('vote', key, eventTitle, eventType, name);
     renderAllGrids();
   });
@@ -4122,6 +4152,7 @@ function voteSuggestion(btn, index) {
       suggestions[index].votes = entry.voters.length;
       saveToServer('suggestions', suggestions);
       saveVotes();
+      syncFPPCState();
       syncVoteToSheets('unvote', key, eventTitle, 'suggestion', name);
       renderSuggestions();
       return;
@@ -4130,6 +4161,7 @@ function voteSuggestion(btn, index) {
     suggestions[index].votes = entry.voters.length;
     saveToServer('suggestions', suggestions);
     saveVotes();
+    syncFPPCState();
     syncVoteToSheets('vote', key, eventTitle, 'suggestion', name);
     renderSuggestions();
   });
@@ -4144,12 +4176,14 @@ function voteApproved(btn, index) {
     if (hasVoted(key, name)) {
       entry.voters = entry.voters.filter(v => v.toLowerCase() !== name.toLowerCase());
       saveVotes();
+      syncFPPCState();
       syncVoteToSheets('unvote', key, eventTitle, 'approved', name);
       renderAllGrids();
       return;
     }
     entry.voters.push(name);
     saveVotes();
+    syncFPPCState();
     syncVoteToSheets('vote', key, eventTitle, 'approved', name);
     renderAllGrids();
   });
