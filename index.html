@@ -1922,6 +1922,11 @@ fetch('/api/quotes')
     </div>
   </div>
 
+  <!-- Sync status -->
+  <div style="text-align:right;margin-top:-10px;margin-bottom:4px;padding-right:4px;">
+    <span id="sync-status" style="font-size:9px;color:var(--text-muted)"></span>
+  </div>
+
   <!-- Export votes bar (admin only) -->
   <div class="export-bar admin-only-flex" id="export-bar">
     <div class="export-info">📊 <strong>Vote Tracker</strong> — Export current vote data so Claude can monitor and notify #fppc when events hit 4 votes.</div>
@@ -4885,7 +4890,13 @@ try { renderCalendar(); } catch(e) { console.warn('renderCalendar init error:', 
         var payload = { action: "replace", sheet: key, data: serData };
         if (key === "votes" && !Array.isArray(data)) {
           payload.data = Object.keys(data).map(function(k) {
-            return { eventTitle: k.split("||")[0] || "", sheetName: k.split("||")[1] || "", voterName: data[k], votedAt: new Date().toISOString() };
+            var entry = data[k];
+            return {
+              eventKey: k,
+              voters: Array.isArray(entry.voters) ? entry.voters.join(', ') : '',
+              voterCount: Array.isArray(entry.voters) ? entry.voters.length : 0,
+              notified: entry.notified || false
+            };
           });
         }
         fetch("https://script.google.com/macros/s/AKfycbzTzXIYteGl_B8LGESf30EUVaQL1w4wbQJoyOfDVeUySihIjzYSr0tkj8FC5L-PD-O9/exec", {
@@ -4918,8 +4929,11 @@ try { renderCalendar(); } catch(e) { console.warn('renderCalendar init error:', 
           if (data.votes && data.votes.length) {
             voteData = {};
             data.votes.forEach(function(v) {
-              var key = v.eventTitle + "||" + v.sheetName;
-              voteData[key] = v.voterName;
+              var key = v.eventKey || (v.eventTitle + "||" + v.sheetName);
+              var votersList = typeof v.voters === 'string' && v.voters
+                ? v.voters.split(',').map(function(s) { return s.trim(); }).filter(Boolean)
+                : (Array.isArray(v.voters) ? v.voters : []);
+              voteData[key] = { voters: votersList, notified: v.notified || false };
             });
           }
           if (data.snacks && data.snacks.length) {
@@ -4928,6 +4942,8 @@ try { renderCalendar(); } catch(e) { console.warn('renderCalendar init error:', 
           try { renderAllGrids(); } catch(e) { console.warn("renderAllGrids:", e); }
           try { renderPastGrid(); } catch(e) { console.warn("renderPastGrid:", e); }
           try { renderSuggestions(); } catch(e) { console.warn("renderSuggestions:", e); }
+          var syncEl = document.getElementById('sync-status');
+          if (syncEl) syncEl.textContent = 'Synced ' + new Date().toLocaleTimeString();
           console.log("Loaded data from Google Sheets");
         })
         .catch(function(e) { console.warn("loadFromServer failed:", e); });
