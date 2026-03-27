@@ -2765,6 +2765,11 @@ function renderSportsGrid(filter) {
     return `
     <div class="event-card ${teamClass}" data-type="${e.team}" data-free="${e.free || false}">
       <div class="type-stripe"></div>
+      <div class="card-admin-actions admin-only">
+        <button class="card-admin-btn" onclick="archiveEvent('sportsGames', ${origIndex})" title="Archive">\uD83D\uDCC1</button>
+        <button class="card-admin-btn" onclick="editCuratedEvent('sportsGames', ${origIndex})" title="Edit">\u270F\uFE0F</button>
+        <button class="card-admin-btn" onclick="deleteCuratedEvent('sportsGames', ${origIndex})" title="Remove">\uD83D\uDDD1\uFE0F</button>
+      </div>
       <div>
         <span class="tag ${e.team}">${teamLabels[e.team] || e.team}</span>${freeTag}${milestone}
       </div>
@@ -3049,7 +3054,7 @@ function confirmVoterName() {
 function vote(btn, arrayName, index) {
   const key = getVoteKey('curated', arrayName + '-' + index);
   // Look up event title for Sheets logging
-  const eventArrays = { sfEvents, volunteerEvents, teamEvents };
+  const eventArrays = { sfEvents, volunteerEvents, teamEvents, sportsGames };
   const evt = eventArrays[arrayName] ? eventArrays[arrayName][index] : null;
   const eventTitle = evt ? evt.title : key;
   const eventType = evt ? (evt.type || '') : '';
@@ -3108,6 +3113,7 @@ function saveCuratedEvents() {
   saveToServer('sfEvents', sfEvents);
   saveToServer('volunteerEvents', volunteerEvents);
   saveToServer('teamEvents', teamEvents);
+  saveToServer('sportsGames', sportsGames);
 }
 
 // Load any saved curated event edits (already loaded before first renderAllGrids)
@@ -3159,6 +3165,8 @@ function submitCuratedEvent(e) {
 
   const arr = eventArrays[editingCurated.arrayName];
   if (editingCurated.index >= 0) {
+    // Preserve sports team field if editing a sportsGames entry
+    if (editingCurated.arrayName === 'sportsGames') { event.team = arr[editingCurated.index].team; }
     arr[editingCurated.index] = event;
     showToast('✏️ Event updated!');
   } else {
