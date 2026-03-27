@@ -2780,7 +2780,7 @@ function renderSportsGrid(filter) {
       </div>
       <h3>${e.title}</h3>
       <div class="meta">
-        <div>\uD83D\uDCC5 ${e.date}</div>
+        <div>\uD83D\uDCC5 ${getDayOfWeek(e.date)}${e.date}</div>
         <div>\uD83D\uDCCD ${e.location}</div>
         ${priceInfo}
       </div>
@@ -3509,7 +3509,7 @@ function buildResearchHTML(research) {
   let html = '<div class="research-box"><h4>📋 Auto-Researched Info</h4>';
   if (research.officialName) html += `<div class="detail-row"><span class="label-icon">🏷️</span> <strong>${research.officialName}</strong></div>`;
   if (research.address) html += `<div class="detail-row"><span class="label-icon">📍</span> ${research.address}</div>`;
-  if (research.date) html += `<div class="detail-row"><span class="label-icon">📅</span> ${research.date}</div>`;
+  if (research.date) html += `<div class="detail-row"><span class="label-icon">📅</span> ${getDayOfWeek(research.date)}${research.date}</div>`;
   if (research.hours) html += `<div class="detail-row"><span class="label-icon">🕐</span> ${research.hours}</div>`;
   if (research.price) html += `<div class="detail-row"><span class="label-icon">💰</span> ${research.price}</div>`;
   if (research.phone) html += `<div class="detail-row"><span class="label-icon">📞</span> ${research.phone}</div>`;
@@ -4640,7 +4640,7 @@ function renderCalendar() {
       recHtml += `<div class="recurring-item" style="cursor:pointer;" onclick="openCalPopup(${storeIdx})">
         <span class="recurring-dot" style="background:${color};"></span>
         <span class="rec-title">${ev.title}</span>
-        <span class="rec-date">${ev.date}</span>
+        <span class="rec-date">${getDayOfWeek(ev.date)}${ev.date}</span>
       </div>`;
     });
     recHtml += '</div>';
@@ -4676,7 +4676,7 @@ function openCalPopup(storeIdx) {
   let metaHtml = '';
   const typeLabels = { social: 'Social', food: 'Food & Drink', volunteer: 'Volunteer', team: 'Team Building', suggestion: 'Suggestion' };
   metaHtml += `<div class="popup-meta-row"><span class="meta-icon">🏷️</span> ${typeLabels[ev.type] || 'Event'}</div>`;
-  if (ev.date) metaHtml += `<div class="popup-meta-row"><span class="meta-icon">📅</span> ${ev.date}</div>`;
+  if (ev.date) metaHtml += `<div class="popup-meta-row"><span class="meta-icon">📅</span> ${getDayOfWeek(ev.date)}${ev.date}</div>`;
   if (ev.location) metaHtml += `<div class="popup-meta-row"><span class="meta-icon">📍</span> ${ev.location}</div>`;
   if (ev.free) {
     metaHtml += `<div class="popup-meta-row"><span class="meta-icon">🎟️</span> <strong style="color:#2F855A;">FREE</strong></div>`;
