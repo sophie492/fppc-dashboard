@@ -250,6 +250,80 @@ app.get('/api/quotes', (req, res) => {
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
+// ── Public FPPC votes endpoint (no auth, read-only) ──
+app.get('/api/fppc-votes', (req, res) => {
+  try {
+    // Load all event arrays from data files (or fall back to empty)
+    const loadJSON = (name) => {
+      const fp = path.join(DATA_DIR, name + '.json');
+      try { return fs.existsSync(fp) ? JSON.parse(fs.readFileSync(fp, 'utf8')) : null; } catch(e) { return null; }
+    };
+
+    // Load curated event arrays — try server-persisted data first, but we need the
+    // hardcoded arrays from index.html as fallback.  Since we can't require() an HTML
+    // file, we read from the data store (the dashboard saves them via /api/store/:key).
+    const sfEvents = loadJSON('sfEvents') || [];
+    const volunteerEvents = loadJSON('volunteerEvents') || [];
+    const teamEvents = loadJSON('teamEvents') || [];
+    const suggestions = loadJSON('suggestions') || [];
+    const votes = loadJSON('votes') || {};
+
+    const events = [];
+
+    // Helper to add events from an array
+    const addEvents = (arr, sourceType) => {
+      if (!Array.isArray(arr)) return;
+      arr.forEach(e => {
+        if (!e || !e.id) return;
+        const voteEntry = votes[e.id];
+        const voters = (voteEntry && Array.isArray(voteEntry.voters)) ? voteEntry.voters : [];
+        events.push({
+          id: e.id,
+          title: e.title,
+          date: e.date || '',
+          location: e.location || '',
+          type: e.type || sourceType || 'social',
+          votes: voters.length,
+          voters: voters
+        });
+      });
+    };
+
+    addEvents(sfEvents, 'social');
+    addEvents(volunteerEvents, 'volunteer');
+    addEvents(teamEvents, 'team');
+
+    // Approved suggestions
+    if (Array.isArray(suggestions)) {
+      suggestions.filter(s => s && s.approved).forEach(s => {
+        if (!s.id) return;
+        const voteEntry = votes[s.id];
+        const voters = (voteEntry && Array.isArray(voteEntry.voters)) ? voteEntry.voters : [];
+        events.push({
+          id: s.id,
+          title: s.title,
+          date: s.date || '',
+          location: s.location || '',
+          type: s.type || s.category || 'social',
+          votes: voters.length,
+          voters: voters
+        });
+      });
+    }
+
+    // Sort by votes descending
+    events.sort((a, b) => b.votes - a.votes);
+
+    res.json({
+      events,
+      updatedAt: new Date().toISOString()
+    });
+  } catch (e) {
+    console.error('Error in /api/fppc-votes:', e);
+    res.status(500).json({ error: 'Failed to load FPPC votes' });
+  }
+});
+
 // ── Auth gate: require login for all pages ──
 app.use((req, res, next) => {
   if (req.isAuthenticated()) return next();

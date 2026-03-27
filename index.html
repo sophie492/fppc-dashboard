@@ -2509,73 +2509,81 @@ function logoutAdmin() {
 // Apply role on load
 applyRole();
 
+// ========== ID GENERATION ==========
+function slugify(str) {
+  return str.toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '')
+    .slice(0, 50);
+}
+
 // ========== EVENT DATA ==========
 let sfEvents = [
-  { title: "St. Patrick's 3-Day Pub Crawl", date: "Mar 13–17", location: "Multiple bars citywide", description: "Over 15,000 people. Drink specials. No cover. The biggest St. Patrick's Day party in SF. The FPPC approves.", type: "social", free: false, price: "$15", link: "https://sf.funcheap.com/" },
-  { title: "SFMOMA — $15 Discounted Admission", date: "Mar 2 – Apr 17", location: "SFMOMA, 151 3rd St, SoMa", description: "Full museum access at nearly half price through Apr 17. Culture! Art! Things to argue about at happy hour!", type: "social", free: false, price: "$15", link: "https://www.sfmoma.org/deals-discounts/" },
-  { title: "SF Chocolate Salon & Festival", date: "Mar 28, 11 AM–5 PM", location: "Hall of Flowers, Golden Gate Park", description: "20th Annual. Artisan chocolate. Tastings. Demonstrations. The committee unanimously approves of chocolate.", type: "food", free: false, price: "$$", link: "https://www.sfchocolatesalon.com/" },
-  { title: "Renegade Craft Spring Fair", date: "Mar 28–29, 11 AM–5 PM", location: "Fort Mason Center Festival Pavilion", description: "Handmade goods, local artisans, food. Good vibes. $5 suggested entry.", type: "social", free: true, link: "https://www.renegadecraft.com/event/san-francisco-spring/" },
-  { title: "Illuminate LIVE Outdoor Concerts", date: "Every Sunday, 4–7:30 PM", location: "Golden Gate Bandshell, GG Park", description: "Free outdoor concerts. 125+ performances Mar–Nov. Pack a blanket. This is team bonding.", type: "social", free: true, link: "https://illuminate.org/venues/golden-gate-bandshell/" },
-  { title: "Rush Hour Comedy Night", date: "Every Friday, 7–10 PM", location: "The Function, SF", description: "SF's best Black & Asian comedians. FREE. The budget committee is thrilled.", type: "social", free: true, link: "https://sf.funcheap.com/" },
-  { title: "$1 Drink Fridays at Monroe", date: "Every Friday", location: "Monroe, North Beach", description: "Battle of the Decades DJ party. Dollar drinks. The FPPC budget stretches further here.", type: "social", free: false, price: "$1 drinks", link: "https://sf.funcheap.com/" },
-  { title: "St. Stupid's Day Parade", date: "Apr 1, 12–2 PM", location: "Embarcadero Plaza (foot of Market St)", description: "48th Annual. Assembles at Justin Herman Plaza. The FPPC respects commitment to absurdity.", type: "social", free: true, link: "https://sf.funcheap.com/st-stupids-day-parade-san-francisco/" },
-  { title: "Easter in the Park", date: "Apr 5, 10 AM–4 PM", location: "Mission Dolores Park", description: "Sisters of Perpetual Indulgence, 47th Anniversary. Easter egg hunt at 10 AM, main stage at noon. FREE.", type: "social", free: true, link: "https://sf.funcheap.com/park-easter-celebration-hunky-jesus-contest-mission-dist/" },
-  { title: "HEAD WEST Marketplace", date: "Apr 5, 11 AM–5 PM", location: "SF Ferry Building Back Plaza", description: "Free marketplace. Local brands, handmade ceramics, vintage goods. First Sunday every month.", type: "social", free: true, link: "https://www.headwestmarketplace.com/ferrybuilding" },
-  { title: "Cherry Blossom Festival — Weekend 1", date: "Apr 11–12, 11 AM–6 PM", location: "Post St, Japantown (Laguna to Fillmore)", description: "59th Annual. 250,000+ expected. Cultural performances, food, arts & crafts. Two weekends!", type: "social", free: true, link: "https://sfcherryblossom.org/" },
-  { title: "César Chávez Holiday Parade & Festival", date: "Apr 11, 11 AM–6 PM", location: "24th St (Folsom to Bryant), Mission", description: "Largest César Chávez celebration in NorCal. Parade starts at Dolores Park at 11 AM.", type: "social", free: true, link: "https://cesarchavezday.org/" },
-  { title: "Bay Area Brew Festival", date: "Apr 18, 12–4 PM", location: "Presidio Main Lawn, Fort Mason", description: "70+ breweries, hundreds of beers, food trucks, live music, lawn games. Unlimited sampling with admission.", type: "food", free: false, price: "$$", link: "https://www.bayareabrewfestival.com/" },
-  { title: "Cherry Blossom Festival — Weekend 2 & Parade", date: "Apr 18–19, 11 AM–6 PM", location: "Post St, Japantown (Laguna to Fillmore)", description: "Grand Parade on Sunday! Cultural performances, food booths, family-friendly activities.", type: "social", free: true, link: "https://sfcherryblossom.org/" },
-  { title: "Carnaval SF Festival", date: "May 23, 11 AM–6 PM", location: "Harrison St (17th–24th), Mission", description: "250 exhibitors, 50 food vendors, 5 stages, DJ block parties, Kids Zone. Latin & Caribbean culture!", type: "social", free: true, link: "https://carnavalsanfrancisco.org/" },
-  { title: "Carnaval SF Grand Parade", date: "May 24, 10 AM–2 PM", location: "24th & Bryant to South Van Ness, Mission", description: "Grand Parade through 20 blocks of the Mission. The best parade SF has to offer.", type: "social", free: true, link: "https://carnavalsanfrancisco.org/" },
-  { title: "SOMA Nights — Art & Food Walk", date: "May 28, 5–9 PM", location: "Folsom St (6th–12th), SoMa", description: "20+ businesses, pop-up vendors, performances, street activations. Monthly block party.", type: "food", free: true, link: "https://sf.funcheap.com/soma-nights-neighborhood-block-party-night-market-sf-10/" },
+  { id: "st-patricks-3-day-pub-crawl", title: "St. Patrick's 3-Day Pub Crawl", date: "Mar 13–17", location: "Multiple bars citywide", description: "Over 15,000 people. Drink specials. No cover. The biggest St. Patrick's Day party in SF. The FPPC approves.", type: "social", free: false, price: "$15", link: "https://sf.funcheap.com/" },
+  { id: "sfmoma-15-discounted-admission", title: "SFMOMA — $15 Discounted Admission", date: "Mar 2 – Apr 17", location: "SFMOMA, 151 3rd St, SoMa", description: "Full museum access at nearly half price through Apr 17. Culture! Art! Things to argue about at happy hour!", type: "social", free: false, price: "$15", link: "https://www.sfmoma.org/deals-discounts/" },
+  { id: "sf-chocolate-salon-festival", title: "SF Chocolate Salon & Festival", date: "Mar 28, 11 AM–5 PM", location: "Hall of Flowers, Golden Gate Park", description: "20th Annual. Artisan chocolate. Tastings. Demonstrations. The committee unanimously approves of chocolate.", type: "food", free: false, price: "$$", link: "https://www.sfchocolatesalon.com/" },
+  { id: "renegade-craft-spring-fair", title: "Renegade Craft Spring Fair", date: "Mar 28–29, 11 AM–5 PM", location: "Fort Mason Center Festival Pavilion", description: "Handmade goods, local artisans, food. Good vibes. $5 suggested entry.", type: "social", free: true, link: "https://www.renegadecraft.com/event/san-francisco-spring/" },
+  { id: "illuminate-live-outdoor-concerts", title: "Illuminate LIVE Outdoor Concerts", date: "Every Sunday, 4–7:30 PM", location: "Golden Gate Bandshell, GG Park", description: "Free outdoor concerts. 125+ performances Mar–Nov. Pack a blanket. This is team bonding.", type: "social", free: true, link: "https://illuminate.org/venues/golden-gate-bandshell/" },
+  { id: "rush-hour-comedy-night", title: "Rush Hour Comedy Night", date: "Every Friday, 7–10 PM", location: "The Function, SF", description: "SF's best Black & Asian comedians. FREE. The budget committee is thrilled.", type: "social", free: true, link: "https://sf.funcheap.com/" },
+  { id: "1-drink-fridays-at-monroe", title: "$1 Drink Fridays at Monroe", date: "Every Friday", location: "Monroe, North Beach", description: "Battle of the Decades DJ party. Dollar drinks. The FPPC budget stretches further here.", type: "social", free: false, price: "$1 drinks", link: "https://sf.funcheap.com/" },
+  { id: "st-stupid-s-day-parade", title: "St. Stupid's Day Parade", date: "Apr 1, 12–2 PM", location: "Embarcadero Plaza (foot of Market St)", description: "48th Annual. Assembles at Justin Herman Plaza. The FPPC respects commitment to absurdity.", type: "social", free: true, link: "https://sf.funcheap.com/st-stupids-day-parade-san-francisco/" },
+  { id: "easter-in-the-park", title: "Easter in the Park", date: "Apr 5, 10 AM–4 PM", location: "Mission Dolores Park", description: "Sisters of Perpetual Indulgence, 47th Anniversary. Easter egg hunt at 10 AM, main stage at noon. FREE.", type: "social", free: true, link: "https://sf.funcheap.com/park-easter-celebration-hunky-jesus-contest-mission-dist/" },
+  { id: "head-west-marketplace", title: "HEAD WEST Marketplace", date: "Apr 5, 11 AM–5 PM", location: "SF Ferry Building Back Plaza", description: "Free marketplace. Local brands, handmade ceramics, vintage goods. First Sunday every month.", type: "social", free: true, link: "https://www.headwestmarketplace.com/ferrybuilding" },
+  { id: "cherry-blossom-festival-weekend-1", title: "Cherry Blossom Festival — Weekend 1", date: "Apr 11–12, 11 AM–6 PM", location: "Post St, Japantown (Laguna to Fillmore)", description: "59th Annual. 250,000+ expected. Cultural performances, food, arts & crafts. Two weekends!", type: "social", free: true, link: "https://sfcherryblossom.org/" },
+  { id: "cesar-chavez-holiday-parade-festival", title: "César Chávez Holiday Parade & Festival", date: "Apr 11, 11 AM–6 PM", location: "24th St (Folsom to Bryant), Mission", description: "Largest César Chávez celebration in NorCal. Parade starts at Dolores Park at 11 AM.", type: "social", free: true, link: "https://cesarchavezday.org/" },
+  { id: "bay-area-brew-festival", title: "Bay Area Brew Festival", date: "Apr 18, 12–4 PM", location: "Presidio Main Lawn, Fort Mason", description: "70+ breweries, hundreds of beers, food trucks, live music, lawn games. Unlimited sampling with admission.", type: "food", free: false, price: "$$", link: "https://www.bayareabrewfestival.com/" },
+  { id: "cherry-blossom-festival-weekend-2-parade", title: "Cherry Blossom Festival — Weekend 2 & Parade", date: "Apr 18–19, 11 AM–6 PM", location: "Post St, Japantown (Laguna to Fillmore)", description: "Grand Parade on Sunday! Cultural performances, food booths, family-friendly activities.", type: "social", free: true, link: "https://sfcherryblossom.org/" },
+  { id: "carnaval-sf-festival", title: "Carnaval SF Festival", date: "May 23, 11 AM–6 PM", location: "Harrison St (17th–24th), Mission", description: "250 exhibitors, 50 food vendors, 5 stages, DJ block parties, Kids Zone. Latin & Caribbean culture!", type: "social", free: true, link: "https://carnavalsanfrancisco.org/" },
+  { id: "carnaval-sf-grand-parade", title: "Carnaval SF Grand Parade", date: "May 24, 10 AM–2 PM", location: "24th & Bryant to South Van Ness, Mission", description: "Grand Parade through 20 blocks of the Mission. The best parade SF has to offer.", type: "social", free: true, link: "https://carnavalsanfrancisco.org/" },
+  { id: "soma-nights-art-food-walk", title: "SOMA Nights — Art & Food Walk", date: "May 28, 5–9 PM", location: "Folsom St (6th–12th), SoMa", description: "20+ businesses, pop-up vendors, performances, street activations. Monthly block party.", type: "food", free: true, link: "https://sf.funcheap.com/soma-nights-neighborhood-block-party-night-market-sf-10/" },
 ];
 
 let volunteerEvents = [
-  { title: "Presidio Forest Stewards", date: "Mar 14, 9 AM–12 PM", location: "Presidio of San Francisco", description: "Restore natural areas and create wildlife corridors. Recurring: every Saturday 9 AM–Noon.", type: "volunteer", link: "https://www.parksconservancy.org/volunteer/volunteer-projects-and-activities" },
-  { title: "Black Point Historic Gardens", date: "Mar 13, 9 AM–12 PM", location: "Fort Mason, SF", description: "Help maintain the historic gardens at Fort Mason. Tools and gloves provided.", type: "volunteer", link: "https://www.parksconservancy.org/volunteer/volunteer-projects-and-activities" },
-  { title: "Fort Mason Historic Landscaping", date: "Mar 17, 9 AM–12 PM", location: "Fort Mason, SF", description: "Maintain historic landscapes and green spaces at Fort Mason Center.", type: "volunteer", link: "https://www.parksconservancy.org/volunteer/volunteer-projects-and-activities" },
-  { title: "Dress for Success SF — Volunteer Orientation", date: "Apr 3, 2026", location: "Dress for Success SF", description: "Help women achieve economic independence. Monthly orientations. Next: May 1.", type: "volunteer", link: "https://www.sfdress.org/partnerships/volunteer-opportunities" },
-  { title: "Dress for Success SF — May Orientation", date: "May 1, 2026", location: "Dress for Success SF", description: "Help women achieve economic independence through career coaching and wardrobe services.", type: "volunteer", link: "https://www.sfdress.org/partnerships/volunteer-opportunities" },
-  { title: "SF Animal Care & Control — Orientation", date: "Every 2nd & 4th Saturday, 10 AM", location: "SF ACC, 1200 15th St", description: "Walk dogs, socialize cats, help with adoptions. Preregistration required: (415) 554-9414.", type: "volunteer", link: "https://www.sfanimalcare.org/volunteer/" },
-  { title: "HandsOn Bay Area — Community Projects", date: "Ongoing", location: "Various locations, SF", description: "Serve Bay Area schools, parks, and nonprofits. Check calendar for weekly drop-in projects.", type: "volunteer", link: "https://www.handsonbayarea.org/calendar" },
-  { title: "The School Farm — Volunteer Work Party", date: "Every 2nd Saturday, 12–4 PM", location: "SF", description: "Lend a hand, learn about farm work. All skill levels welcome. Fresh air + good vibes.", type: "volunteer", link: "https://www.handsonbayarea.org/calendar" },
-  { title: "Presidio Habitat Stewards", date: "Every 1st & 3rd Wednesday, 9 AM–12 PM", location: "Presidio of San Francisco", description: "Restore native habitats in the Presidio. Recurring weekday volunteer opportunity.", type: "volunteer", link: "https://presidio.gov/support/volunteer" },
-  { title: "SF Parks & Recreation Volunteer Days", date: "Ongoing — see calendar", location: "Various SF Parks", description: "Help beautify outdoor spaces. Planting, trail maintenance, cleanup. Contact recparkvolunteer@sfgov.org.", type: "volunteer", link: "https://sfrecpark.org/1498/Volunteer-Calendar" },
+  { id: "presidio-forest-stewards", title: "Presidio Forest Stewards", date: "Mar 14, 9 AM–12 PM", location: "Presidio of San Francisco", description: "Restore natural areas and create wildlife corridors. Recurring: every Saturday 9 AM–Noon.", type: "volunteer", link: "https://www.parksconservancy.org/volunteer/volunteer-projects-and-activities" },
+  { id: "black-point-historic-gardens", title: "Black Point Historic Gardens", date: "Mar 13, 9 AM–12 PM", location: "Fort Mason, SF", description: "Help maintain the historic gardens at Fort Mason. Tools and gloves provided.", type: "volunteer", link: "https://www.parksconservancy.org/volunteer/volunteer-projects-and-activities" },
+  { id: "fort-mason-historic-landscaping", title: "Fort Mason Historic Landscaping", date: "Mar 17, 9 AM–12 PM", location: "Fort Mason, SF", description: "Maintain historic landscapes and green spaces at Fort Mason Center.", type: "volunteer", link: "https://www.parksconservancy.org/volunteer/volunteer-projects-and-activities" },
+  { id: "dress-for-success-sf-volunteer-orientation", title: "Dress for Success SF — Volunteer Orientation", date: "Apr 3, 2026", location: "Dress for Success SF", description: "Help women achieve economic independence. Monthly orientations. Next: May 1.", type: "volunteer", link: "https://www.sfdress.org/partnerships/volunteer-opportunities" },
+  { id: "dress-for-success-sf-may-orientation", title: "Dress for Success SF — May Orientation", date: "May 1, 2026", location: "Dress for Success SF", description: "Help women achieve economic independence through career coaching and wardrobe services.", type: "volunteer", link: "https://www.sfdress.org/partnerships/volunteer-opportunities" },
+  { id: "sf-animal-care-control-orientation", title: "SF Animal Care & Control — Orientation", date: "Every 2nd & 4th Saturday, 10 AM", location: "SF ACC, 1200 15th St", description: "Walk dogs, socialize cats, help with adoptions. Preregistration required: (415) 554-9414.", type: "volunteer", link: "https://www.sfanimalcare.org/volunteer/" },
+  { id: "handson-bay-area-community-projects", title: "HandsOn Bay Area — Community Projects", date: "Ongoing", location: "Various locations, SF", description: "Serve Bay Area schools, parks, and nonprofits. Check calendar for weekly drop-in projects.", type: "volunteer", link: "https://www.handsonbayarea.org/calendar" },
+  { id: "the-school-farm-volunteer-work-party", title: "The School Farm — Volunteer Work Party", date: "Every 2nd Saturday, 12–4 PM", location: "SF", description: "Lend a hand, learn about farm work. All skill levels welcome. Fresh air + good vibes.", type: "volunteer", link: "https://www.handsonbayarea.org/calendar" },
+  { id: "presidio-habitat-stewards", title: "Presidio Habitat Stewards", date: "Every 1st & 3rd Wednesday, 9 AM–12 PM", location: "Presidio of San Francisco", description: "Restore native habitats in the Presidio. Recurring weekday volunteer opportunity.", type: "volunteer", link: "https://presidio.gov/support/volunteer" },
+  { id: "sf-parks-recreation-volunteer-days", title: "SF Parks & Recreation Volunteer Days", date: "Ongoing — see calendar", location: "Various SF Parks", description: "Help beautify outdoor spaces. Planting, trail maintenance, cleanup. Contact recparkvolunteer@sfgov.org.", type: "volunteer", link: "https://sfrecpark.org/1498/Volunteer-Calendar" },
 ];
 
 let teamEvents = [
-  { title: "Italian Culinary Team Experience", date: "Book anytime", location: "SF", description: "Cook together, eat together, bond forever. Top-rated team activity in SF.", type: "team", price: "From $85/person", link: "https://www.eventsinminutes.com/blog/best-team-building-activities-in-san-francisco-2026/" },
-  { title: "The Great Art Heist", date: "Book anytime", location: "SF", description: "Escape room meets art gallery. Solve puzzles, steal paintings (fake ones). Very FPPC.", type: "team", price: "From $65/person", link: "https://www.eventsinminutes.com/blog/best-team-building-activities-in-san-francisco-2026/" },
-  { title: "Company Feud Game Show", date: "Book anytime", location: "SF (or office)", description: "It's Family Feud but with coworkers. Survey says: the FPPC delivers.", type: "team", price: "From $75/person", link: "https://www.eventsinminutes.com/blog/best-team-building-activities-in-san-francisco-2026/" },
-  { title: "Hot Tub Boat Cruise", date: "Book anytime", location: "SF Bay", description: "Private hot tub boat on the Bay. 2–6 people. 1.5 hours. Executive-level relaxation.", type: "team", price: "Group rate", link: "https://www.eventsinminutes.com/blog/team-building-small-groups-san-francisco-2026/" },
-  { title: "Clay By The Bay — Pottery Workshop", date: "Book anytime", location: "SF", description: "Get your hands dirty. Make something beautiful. Ghost scene reenactments optional.", type: "team", price: "From $55/person", link: "https://www.eventsinminutes.com/blog/team-building-small-groups-san-francisco-2026/" },
-  { title: "Urban Putt — Mini Golf + Craft Beer", date: "Walk-in or book", location: "Mission District", description: "Technical mini-golf meets craft beer. Competitive fun. The FPPC endorses this energy.", type: "team", price: "$16/person", link: "https://www.eventsinminutes.com/blog/team-building-small-groups-san-francisco-2026/" },
-  { title: "Lands End Trail Group Hike", date: "Anytime", location: "Lands End, SF", description: "Golden Gate views. Group conversations. Free. The budget committee loves this one.", type: "team", free: true, link: "https://www.eventsinminutes.com/blog/team-building-small-groups-san-francisco-2026/" },
-  { title: "Brew Boat — Pedal-Powered Cruise", date: "Book anytime", location: "SF Waterfront", description: "6–26 passengers pedal around the waterfront. BYOB. Team effort literally required.", type: "team", price: "Group rate", link: "https://www.eventsinminutes.com/blog/team-building-small-groups-san-francisco-2026/" },
+  { id: "italian-culinary-team-experience", title: "Italian Culinary Team Experience", date: "Book anytime", location: "SF", description: "Cook together, eat together, bond forever. Top-rated team activity in SF.", type: "team", price: "From $85/person", link: "https://www.eventsinminutes.com/blog/best-team-building-activities-in-san-francisco-2026/" },
+  { id: "the-great-art-heist", title: "The Great Art Heist", date: "Book anytime", location: "SF", description: "Escape room meets art gallery. Solve puzzles, steal paintings (fake ones). Very FPPC.", type: "team", price: "From $65/person", link: "https://www.eventsinminutes.com/blog/best-team-building-activities-in-san-francisco-2026/" },
+  { id: "company-feud-game-show", title: "Company Feud Game Show", date: "Book anytime", location: "SF (or office)", description: "It's Family Feud but with coworkers. Survey says: the FPPC delivers.", type: "team", price: "From $75/person", link: "https://www.eventsinminutes.com/blog/best-team-building-activities-in-san-francisco-2026/" },
+  { id: "hot-tub-boat-cruise", title: "Hot Tub Boat Cruise", date: "Book anytime", location: "SF Bay", description: "Private hot tub boat on the Bay. 2–6 people. 1.5 hours. Executive-level relaxation.", type: "team", price: "Group rate", link: "https://www.eventsinminutes.com/blog/team-building-small-groups-san-francisco-2026/" },
+  { id: "clay-by-the-bay-pottery-workshop", title: "Clay By The Bay — Pottery Workshop", date: "Book anytime", location: "SF", description: "Get your hands dirty. Make something beautiful. Ghost scene reenactments optional.", type: "team", price: "From $55/person", link: "https://www.eventsinminutes.com/blog/team-building-small-groups-san-francisco-2026/" },
+  { id: "urban-putt-mini-golf-craft-beer", title: "Urban Putt — Mini Golf + Craft Beer", date: "Walk-in or book", location: "Mission District", description: "Technical mini-golf meets craft beer. Competitive fun. The FPPC endorses this energy.", type: "team", price: "$16/person", link: "https://www.eventsinminutes.com/blog/team-building-small-groups-san-francisco-2026/" },
+  { id: "lands-end-trail-group-hike", title: "Lands End Trail Group Hike", date: "Anytime", location: "Lands End, SF", description: "Golden Gate views. Group conversations. Free. The budget committee loves this one.", type: "team", free: true, link: "https://www.eventsinminutes.com/blog/team-building-small-groups-san-francisco-2026/" },
+  { id: "brew-boat-pedal-powered-cruise", title: "Brew Boat — Pedal-Powered Cruise", date: "Book anytime", location: "SF Waterfront", description: "6–26 passengers pedal around the waterfront. BYOB. Team effort literally required.", type: "team", price: "Group rate", link: "https://www.eventsinminutes.com/blog/team-building-small-groups-san-francisco-2026/" },
 ];
 
 // ========== SPORTS GAMES ==========
 let sportsGames = [
-  { title: "Giants vs. Padres", date: "Fri, Mar 27, 7:15 PM", location: "Oracle Park, SF", description: "Opening weekend series. Grab your glove and your garlic fries.", type: "giants", team: "giants", free: false, price: "From $25", link: "https://www.mlb.com/giants/tickets" },
-  { title: "Giants vs. Padres", date: "Sat, Mar 28, 1:05 PM", location: "Oracle Park, SF", description: "Saturday matinee game. Sun, baseball, and team bonding.", type: "giants", team: "giants", free: false, price: "From $25", link: "https://www.mlb.com/giants/tickets" },
-  { title: "Giants vs. Padres", date: "Sun, Mar 29, 1:05 PM", location: "Oracle Park, SF", description: "Series finale. Sunday Funday at the ballpark.", type: "giants", team: "giants", free: false, price: "From $25", link: "https://www.mlb.com/giants/tickets" },
-  { title: "Warriors vs. Rockets", date: "Sun, Mar 29, 5:30 PM", location: "Chase Center, SF", description: "Late-season push. Steph Curry doing Steph Curry things.", type: "warriors", team: "warriors", free: false, price: "From $45", link: "https://www.nba.com/warriors/tickets" },
-  { title: "Giants vs. Cardinals", date: "Mon, Mar 30, 6:45 PM", location: "Oracle Park, SF", description: "Monday night baseball under the lights.", type: "giants", team: "giants", free: false, price: "From $20", link: "https://www.mlb.com/giants/tickets" },
-  { title: "Warriors vs. Kings", date: "Wed, Apr 1, 7:00 PM", location: "Chase Center, SF", description: "NorCal rivalry game. The Bay vs. Sacramento.", type: "warriors", team: "warriors", free: false, price: "From $40", link: "https://www.nba.com/warriors/tickets" },
-  { title: "Sharks vs. Flames", date: "Thu, Apr 3, 7:30 PM", location: "SAP Center, San Jose", description: "Hockey night in San Jose. Teal town showing up.", type: "sharks", team: "sharks", free: false, price: "From $30", link: "https://www.nhl.com/sharks/tickets" },
-  { title: "Bay FC vs. North Carolina Courage", date: "Sat, Apr 5, 7:00 PM", location: "PayPal Park, San Jose", description: "NWSL action. Support the Bay Area's women's soccer team.", type: "bayfc", team: "bayfc", free: false, price: "From $25", link: "https://www.bayfcsoccer.com/tickets" },
-  { title: "Giants vs. Dodgers", date: "Fri, Apr 11, 7:15 PM", location: "Oracle Park, SF", description: "THE rivalry. Giants vs. Dodgers. Enough said.", type: "giants", team: "giants", free: false, price: "From $35", link: "https://www.mlb.com/giants/tickets" },
-  { title: "Giants vs. Dodgers", date: "Sat, Apr 12, 1:05 PM", location: "Oracle Park, SF", description: "Day game edition of the best rivalry in baseball.", type: "giants", team: "giants", free: false, price: "From $35", link: "https://www.mlb.com/giants/tickets" },
-  { title: "Earthquakes vs. LAFC", date: "Sat, Apr 12, 7:30 PM", location: "PayPal Park, San Jose", description: "MLS action. The Quakes host star-studded LAFC.", type: "quakes", team: "quakes", free: false, price: "From $25", link: "https://www.sjearthquakes.com/tickets" },
-  { title: "Warriors vs. Lakers", date: "Tue, Apr 14, 7:30 PM", location: "Chase Center, SF", description: "Steph vs. LeBron. Marquee matchup. Get loud.", type: "warriors", team: "warriors", free: false, price: "From $60", link: "https://www.nba.com/warriors/tickets" },
-  { title: "Sharks vs. Kraken", date: "Sat, Apr 19, 7:30 PM", location: "SAP Center, San Jose", description: "Late-season hockey. The Sharks battle Seattle.", type: "sharks", team: "sharks", free: false, price: "From $25", link: "https://www.nhl.com/sharks/tickets" },
-  { title: "Bay FC vs. Angel City FC", date: "Sat, Apr 19, 5:00 PM", location: "PayPal Park, San Jose", description: "SoCal meets NorCal. A great Saturday afternoon out.", type: "bayfc", team: "bayfc", free: false, price: "From $25", link: "https://www.bayfcsoccer.com/tickets" },
-  { title: "Giants vs. Reds", date: "Fri, Apr 25, 7:15 PM", location: "Oracle Park, SF", description: "Friday night at Oracle. Fireworks postgame.", type: "giants", team: "giants", free: false, price: "From $20", link: "https://www.mlb.com/giants/tickets" },
-  { title: "Earthquakes vs. Galaxy", date: "Sat, May 2, 7:30 PM", location: "PayPal Park, San Jose", description: "Cali Clasico. The biggest rivalry in MLS.", type: "quakes", team: "quakes", free: false, price: "From $30", link: "https://www.sjearthquakes.com/tickets" },
-  { title: "Giants vs. Mets", date: "Fri, May 9, 7:15 PM", location: "Oracle Park, SF", description: "Friday night series opener. Garlic fries are calling.", type: "giants", team: "giants", free: false, price: "From $25", link: "https://www.mlb.com/giants/tickets" },
-  { title: "Bay FC vs. Portland Thorns", date: "Sat, May 10, 5:00 PM", location: "PayPal Park, San Jose", description: "Pacific Northwest showdown. Great matchup.", type: "bayfc", team: "bayfc", free: false, price: "From $25", link: "https://www.bayfcsoccer.com/tickets" },
-  { title: "Earthquakes vs. Portland Timbers", date: "Sat, May 17, 7:30 PM", location: "PayPal Park, San Jose", description: "Cascadia rivalry extends south. Loud atmosphere.", type: "quakes", team: "quakes", free: false, price: "From $25", link: "https://www.sjearthquakes.com/tickets" },
-  { title: "Giants vs. Yankees", date: "Tue, May 20, 6:45 PM", location: "Oracle Park, SF", description: "Interleague classic. The Bronx Bombers visit the Bay.", type: "giants", team: "giants", free: false, price: "From $40", link: "https://www.mlb.com/giants/tickets" }
+  { id: "giants-vs-padres-mar-27", title: "Giants vs. Padres", date: "Fri, Mar 27, 7:15 PM", location: "Oracle Park, SF", description: "Opening weekend series. Grab your glove and your garlic fries.", type: "giants", team: "giants", free: false, price: "From $25", link: "https://www.mlb.com/giants/tickets" },
+  { id: "giants-vs-padres-mar-28", title: "Giants vs. Padres", date: "Sat, Mar 28, 1:05 PM", location: "Oracle Park, SF", description: "Saturday matinee game. Sun, baseball, and team bonding.", type: "giants", team: "giants", free: false, price: "From $25", link: "https://www.mlb.com/giants/tickets" },
+  { id: "giants-vs-padres-mar-29", title: "Giants vs. Padres", date: "Sun, Mar 29, 1:05 PM", location: "Oracle Park, SF", description: "Series finale. Sunday Funday at the ballpark.", type: "giants", team: "giants", free: false, price: "From $25", link: "https://www.mlb.com/giants/tickets" },
+  { id: "warriors-vs-rockets", title: "Warriors vs. Rockets", date: "Sun, Mar 29, 5:30 PM", location: "Chase Center, SF", description: "Late-season push. Steph Curry doing Steph Curry things.", type: "warriors", team: "warriors", free: false, price: "From $45", link: "https://www.nba.com/warriors/tickets" },
+  { id: "giants-vs-cardinals", title: "Giants vs. Cardinals", date: "Mon, Mar 30, 6:45 PM", location: "Oracle Park, SF", description: "Monday night baseball under the lights.", type: "giants", team: "giants", free: false, price: "From $20", link: "https://www.mlb.com/giants/tickets" },
+  { id: "warriors-vs-kings", title: "Warriors vs. Kings", date: "Wed, Apr 1, 7:00 PM", location: "Chase Center, SF", description: "NorCal rivalry game. The Bay vs. Sacramento.", type: "warriors", team: "warriors", free: false, price: "From $40", link: "https://www.nba.com/warriors/tickets" },
+  { id: "sharks-vs-flames", title: "Sharks vs. Flames", date: "Thu, Apr 3, 7:30 PM", location: "SAP Center, San Jose", description: "Hockey night in San Jose. Teal town showing up.", type: "sharks", team: "sharks", free: false, price: "From $30", link: "https://www.nhl.com/sharks/tickets" },
+  { id: "bay-fc-vs-north-carolina-courage", title: "Bay FC vs. North Carolina Courage", date: "Sat, Apr 5, 7:00 PM", location: "PayPal Park, San Jose", description: "NWSL action. Support the Bay Area's women's soccer team.", type: "bayfc", team: "bayfc", free: false, price: "From $25", link: "https://www.bayfcsoccer.com/tickets" },
+  { id: "giants-vs-dodgers-apr-11", title: "Giants vs. Dodgers", date: "Fri, Apr 11, 7:15 PM", location: "Oracle Park, SF", description: "THE rivalry. Giants vs. Dodgers. Enough said.", type: "giants", team: "giants", free: false, price: "From $35", link: "https://www.mlb.com/giants/tickets" },
+  { id: "giants-vs-dodgers-apr-12", title: "Giants vs. Dodgers", date: "Sat, Apr 12, 1:05 PM", location: "Oracle Park, SF", description: "Day game edition of the best rivalry in baseball.", type: "giants", team: "giants", free: false, price: "From $35", link: "https://www.mlb.com/giants/tickets" },
+  { id: "earthquakes-vs-lafc", title: "Earthquakes vs. LAFC", date: "Sat, Apr 12, 7:30 PM", location: "PayPal Park, San Jose", description: "MLS action. The Quakes host star-studded LAFC.", type: "quakes", team: "quakes", free: false, price: "From $25", link: "https://www.sjearthquakes.com/tickets" },
+  { id: "warriors-vs-lakers", title: "Warriors vs. Lakers", date: "Tue, Apr 14, 7:30 PM", location: "Chase Center, SF", description: "Steph vs. LeBron. Marquee matchup. Get loud.", type: "warriors", team: "warriors", free: false, price: "From $60", link: "https://www.nba.com/warriors/tickets" },
+  { id: "sharks-vs-kraken", title: "Sharks vs. Kraken", date: "Sat, Apr 19, 7:30 PM", location: "SAP Center, San Jose", description: "Late-season hockey. The Sharks battle Seattle.", type: "sharks", team: "sharks", free: false, price: "From $25", link: "https://www.nhl.com/sharks/tickets" },
+  { id: "bay-fc-vs-angel-city-fc", title: "Bay FC vs. Angel City FC", date: "Sat, Apr 19, 5:00 PM", location: "PayPal Park, San Jose", description: "SoCal meets NorCal. A great Saturday afternoon out.", type: "bayfc", team: "bayfc", free: false, price: "From $25", link: "https://www.bayfcsoccer.com/tickets" },
+  { id: "giants-vs-reds", title: "Giants vs. Reds", date: "Fri, Apr 25, 7:15 PM", location: "Oracle Park, SF", description: "Friday night at Oracle. Fireworks postgame.", type: "giants", team: "giants", free: false, price: "From $20", link: "https://www.mlb.com/giants/tickets" },
+  { id: "earthquakes-vs-galaxy", title: "Earthquakes vs. Galaxy", date: "Sat, May 2, 7:30 PM", location: "PayPal Park, San Jose", description: "Cali Clasico. The biggest rivalry in MLS.", type: "quakes", team: "quakes", free: false, price: "From $30", link: "https://www.sjearthquakes.com/tickets" },
+  { id: "giants-vs-mets", title: "Giants vs. Mets", date: "Fri, May 9, 7:15 PM", location: "Oracle Park, SF", description: "Friday night series opener. Garlic fries are calling.", type: "giants", team: "giants", free: false, price: "From $25", link: "https://www.mlb.com/giants/tickets" },
+  { id: "bay-fc-vs-portland-thorns", title: "Bay FC vs. Portland Thorns", date: "Sat, May 10, 5:00 PM", location: "PayPal Park, San Jose", description: "Pacific Northwest showdown. Great matchup.", type: "bayfc", team: "bayfc", free: false, price: "From $25", link: "https://www.bayfcsoccer.com/tickets" },
+  { id: "earthquakes-vs-portland-timbers", title: "Earthquakes vs. Portland Timbers", date: "Sat, May 17, 7:30 PM", location: "PayPal Park, San Jose", description: "Cascadia rivalry extends south. Loud atmosphere.", type: "quakes", team: "quakes", free: false, price: "From $25", link: "https://www.sjearthquakes.com/tickets" },
+  { id: "giants-vs-yankees", title: "Giants vs. Yankees", date: "Tue, May 20, 6:45 PM", location: "Oracle Park, SF", description: "Interleague classic. The Bronx Bombers visit the Bay.", type: "giants", team: "giants", free: false, price: "From $40", link: "https://www.mlb.com/giants/tickets" }
 ];
 
 // ========== RENDER FUNCTIONS ==========
@@ -2583,7 +2591,7 @@ function renderCard(event, arrayName, index) {
   const typeClass = event.type;
   const freeTag = event.free ? '<span class="tag free">FREE</span>' : '';
   const priceInfo = event.price ? `<div>💰 ${event.price}</div>` : '';
-  const voteKey = getVoteKey('curated', arrayName + '-' + index);
+  const voteKey = event.id;
   const entry = getVoteEntry(voteKey);
   const voteCount = entry.voters.length;
   const userVoted = currentVoterName && hasVoted(voteKey, currentVoterName);
@@ -2623,7 +2631,7 @@ function renderApprovedCard(s, index) {
   const priceInfo = s.cost && s.cost !== 'Free' ? `<div>💰 ${s.cost}</div>` : '';
   const link = s.url || (s.research && s.research.website) || '#';
   const linkBtn = link !== '#' ? `<a href="${link}" target="_blank" class="btn btn-outline">Learn More ↗</a>` : '';
-  const voteKey = getVoteKey('approved', index);
+  const voteKey = s.id;
   const entry = getVoteEntry(voteKey);
   const voteCount = entry.voters.length;
   const userVoted = currentVoterName && hasVoted(voteKey, currentVoterName);
@@ -2648,7 +2656,7 @@ function renderApprovedCard(s, index) {
       </div>
       <div class="description">${s.description}</div>
       <div class="actions">
-        <button class="btn btn-vote${votedClass}" onclick="voteApproved(this, ${index})">🗳️ ${userVoted ? 'Voted' : 'Vote'} <span class="vote-count">(${voteCount})</span></button>
+        <button class="btn btn-vote${votedClass}" onclick="voteApproved(this, '${s.id}')">🗳️ ${userVoted ? 'Voted' : 'Vote'} <span class="vote-count">(${voteCount})</span></button>
         ${linkBtn}
         <button class="btn btn-undo admin-only" onclick="unapproveSuggestion(${index})" title="Undo approval">↩️ Undo</button>
       </div>
@@ -2802,7 +2810,7 @@ function renderSportsGrid(filter) {
   const teamLabels = { giants: 'Giants', warriors: 'Warriors', sharks: 'Sharks', bayfc: 'Bay FC', quakes: 'Earthquakes' };
   grid.innerHTML = filtered.map((e, i) => {
     const origIndex = sportsGames.indexOf(e);
-    const voteKey = getVoteKey('curated', 'sportsGames-' + origIndex);
+    const voteKey = e.id;
     const entry = getVoteEntry(voteKey);
     const voteCount = entry.voters.length;
     const userVoted = currentVoterName && hasVoted(voteKey, currentVoterName);
@@ -2843,7 +2851,7 @@ function renderSportsGrid(filter) {
 }
 
 function voteSportsGame(index) {
-  const voteKey = getVoteKey('curated', 'sportsGames-' + index);
+  const voteKey = sportsGames[index].id;
   if (!voteData[voteKey]) voteData[voteKey] = { count: 0, voters: [] };
   const voterName = window.currentUserName || 'Anonymous';
   if (voteData[voteKey].voters.includes(voterName)) {
@@ -2877,7 +2885,7 @@ function renderVotesTab() {
 
   var addEvents = function(arr, arrayName) {
     arr.forEach(function(e, i) {
-      var key = getVoteKey('curated', arrayName + '-' + i);
+      var key = e.id;
       var entry = getVoteEntry(key);
       allEvents.push({
         title: e.title,
@@ -2901,7 +2909,7 @@ function renderVotesTab() {
 
   // Add approved suggestions
   suggestions.filter(function(s) { return s.approved; }).forEach(function(s, i) {
-    var key = getVoteKey('approved', String(i));
+    var key = s.id;
     var entry = getVoteEntry(key);
     allEvents.push({
       title: s.title,
@@ -3072,6 +3080,91 @@ function getCurrentMonthName() {
   return months[now.getMonth()] + " " + now.getFullYear();
 }
 
+// ========== VOTE KEY MIGRATION (old index-based → stable IDs) ==========
+function migrateVoteKeys() {
+  // Check if any old-format keys exist
+  const oldKeys = Object.keys(voteData).filter(k =>
+    /^curated-/.test(k) || /^suggestion-\d+$/.test(k) || /^approved-/.test(k)
+  );
+  if (oldKeys.length === 0) return; // No migration needed
+
+  console.log('[Migration] Found ' + oldKeys.length + ' old-format vote keys, migrating...');
+  const allArrays = { sfEvents, volunteerEvents, teamEvents, sportsGames };
+  let migrated = 0;
+
+  oldKeys.forEach(oldKey => {
+    const oldEntry = voteData[oldKey];
+    if (!oldEntry || !oldEntry.voters || oldEntry.voters.length === 0) {
+      delete voteData[oldKey];
+      return;
+    }
+
+    let newId = null;
+
+    if (oldKey.startsWith('curated-')) {
+      // Format: curated-sfEvents-0, curated-volunteerEvents-2, curated-sportsGames-5
+      const rest = oldKey.replace('curated-', '');
+      const lastDash = rest.lastIndexOf('-');
+      if (lastDash === -1) return;
+      const arrayName = rest.slice(0, lastDash);
+      const index = parseInt(rest.slice(lastDash + 1), 10);
+      const arr = allArrays[arrayName];
+      if (arr && index < arr.length && arr[index] && arr[index].id) {
+        newId = arr[index].id;
+      }
+    } else if (oldKey.startsWith('suggestion-')) {
+      const index = parseInt(oldKey.replace('suggestion-', ''), 10);
+      if (index < suggestions.length && suggestions[index] && suggestions[index].id) {
+        newId = suggestions[index].id;
+      }
+    } else if (oldKey.startsWith('approved-')) {
+      const index = parseInt(oldKey.replace('approved-', ''), 10);
+      const approved = suggestions.filter(s => s.approved);
+      if (index < approved.length && approved[index] && approved[index].id) {
+        newId = approved[index].id;
+      }
+    }
+
+    if (!newId) {
+      console.warn('[Migration] Orphaned vote key, skipping:', oldKey);
+      return;
+    }
+
+    // Merge voters (deduplicate by lowercase name)
+    const existing = voteData[newId] ? (voteData[newId].voters || []) : [];
+    const merged = [...existing];
+    const lowerSet = new Set(merged.map(v => v.toLowerCase()));
+    oldEntry.voters.forEach(v => {
+      if (!lowerSet.has(v.toLowerCase())) {
+        merged.push(v);
+        lowerSet.add(v.toLowerCase());
+      }
+    });
+
+    voteData[newId] = { voters: merged, notified: oldEntry.notified || false };
+    delete voteData[oldKey];
+    migrated++;
+  });
+
+  if (migrated > 0) {
+    console.log('[Migration] Migrated ' + migrated + ' vote keys to stable IDs');
+    saveToServer('votes', voteData);
+    // Re-sync each migrated key to Sheets
+    const allEvts = [...sfEvents, ...volunteerEvents, ...teamEvents, ...sportsGames];
+    allEvts.forEach(e => {
+      if (voteData[e.id] && voteData[e.id].voters && voteData[e.id].voters.length > 0) {
+        syncVoteToSheets('vote', e.id, e.title, e.type || '', voteData[e.id].voters[voteData[e.id].voters.length - 1]);
+      }
+    });
+    suggestions.forEach(s => {
+      if (s.id && voteData[s.id] && voteData[s.id].voters && voteData[s.id].voters.length > 0) {
+        syncVoteToSheets('vote', s.id, s.title, s.type || 'suggestion', voteData[s.id].voters[voteData[s.id].voters.length - 1]);
+      }
+    });
+    renderAllGrids();
+  }
+}
+
 // Load votes from Google Sheets (async, merges into voteData)
 async function loadVotesFromSheets() {
   try {
@@ -3087,6 +3180,7 @@ async function loadVotesFromSheets() {
       // Keep local keys that aren't in sheets for now (offline votes)
       saveToServer('votes', voteData);
       sheetsReady = true;
+      try { migrateVoteKeys(); } catch(e) { console.warn('Vote migration error:', e); }
       renderAllGrids();
       try { renderSuggestions(); } catch(e) {}
     }
@@ -3188,11 +3282,6 @@ function syncFPPCState() {
 setInterval(syncFPPCState, 5 * 60 * 1000);
 setTimeout(syncFPPCState, 5000);
 
-function getVoteKey(source, id) {
-  // source: "curated-sfEvents-0", "curated-volunteerEvents-2", "suggestion-3", "approved-1"
-  return source + '-' + id;
-}
-
 function getVoteEntry(key) {
   if (!voteData[key]) voteData[key] = { voters: [], notified: false };
   return voteData[key];
@@ -3237,10 +3326,9 @@ function confirmVoterName() {
 
 // Main vote handler for curated events
 function vote(btn, arrayName, index) {
-  const key = getVoteKey('curated', arrayName + '-' + index);
-  // Look up event title for Sheets logging
-  const eventArrays = { sfEvents, volunteerEvents, teamEvents, sportsGames };
-  const evt = eventArrays[arrayName] ? eventArrays[arrayName][index] : null;
+  const allArrays = { sfEvents, volunteerEvents, teamEvents, sportsGames };
+  const evt = allArrays[arrayName] ? allArrays[arrayName][index] : null;
+  const key = evt ? evt.id : slugify(arrayName + '-' + index);
   const eventTitle = evt ? evt.title : key;
   const eventType = evt ? (evt.type || '') : '';
   ensureVoterName((name) => {
@@ -3266,9 +3354,10 @@ function exportVotesCSV() {
   const rows = [['Event', 'Source', 'Type', 'Vote Count', 'Voters', 'Hit 4+']];
 
   // Curated events
-  [['sfEvents', sfEvents], ['volunteerEvents', volunteerEvents], ['teamEvents', teamEvents]].forEach(([name, arr]) => {
+  [['sfEvents', sfEvents], ['volunteerEvents', volunteerEvents], ['teamEvents', teamEvents], ['sportsGames', sportsGames]].forEach(([name, arr]) => {
+    if (!arr) return;
     arr.forEach((e, i) => {
-      const key = getVoteKey('curated', name + '-' + i);
+      const key = e.id;
       const entry = getVoteEntry(key);
       rows.push([e.title, 'Curated', e.type, entry.voters.length, entry.voters.join('; '), entry.voters.length >= VOTE_THRESHOLD ? 'YES' : '']);
     });
@@ -3276,7 +3365,7 @@ function exportVotesCSV() {
 
   // Suggestions
   suggestions.forEach((s, i) => {
-    const key = getVoteKey('suggestion', i);
+    const key = s.id || ('sug-' + i);
     const entry = getVoteEntry(key);
     rows.push([s.title, s.approved ? 'Approved Suggestion' : 'Suggestion', s.type || 'social', entry.voters.length, entry.voters.join('; '), entry.voters.length >= VOTE_THRESHOLD ? 'YES' : '']);
   });
@@ -3352,11 +3441,13 @@ function submitCuratedEvent(e) {
 
   const arr = eventArrays[editingCurated.arrayName];
   if (editingCurated.index >= 0) {
-    // Preserve sports team field if editing a sportsGames entry
+    // Preserve id and sports team field if editing
+    event.id = arr[editingCurated.index].id;
     if (editingCurated.arrayName === 'sportsGames') { event.team = arr[editingCurated.index].team; }
     arr[editingCurated.index] = event;
     showToast('✏️ Event updated!');
   } else {
+    event.id = slugify(event.title);
     arr.push(event);
     showToast('➕ New event added to the board!');
   }
@@ -3819,6 +3910,7 @@ async function submitSuggestion(e) {
 
   // ===== NEW SUGGESTION — save immediately so it never gets lost =====
   const suggestion = {
+    id: 'sug-' + Math.floor(Date.now() / 1000),
     name: document.getElementById('s-name').value,
     title: title,
     type: document.getElementById('s-type').value,
@@ -4104,7 +4196,7 @@ function renderSuggestions() {
     const approveBtn = s.approved
       ? `<button class="btn btn-undo admin-only" onclick="unapproveSuggestion(${i})">↩️ Undo Approval</button>`
       : `<button class="btn btn-approve admin-only" onclick="approveSuggestion(${i})">Approve</button>`;
-    const sVoteKey = getVoteKey('suggestion', i);
+    const sVoteKey = s.id || ('sug-' + i);
     const sEntry = getVoteEntry(sVoteKey);
     const sVoteCount = sEntry.voters.length;
     const sUserVoted = currentVoterName && hasVoted(sVoteKey, currentVoterName);
@@ -4143,8 +4235,9 @@ function renderSuggestions() {
 }
 
 function voteSuggestion(btn, index) {
-  const key = getVoteKey('suggestion', index);
-  const eventTitle = suggestions[index] ? suggestions[index].title : 'Suggestion ' + index;
+  const s = suggestions[index];
+  const key = s.id || ('sug-' + index);
+  const eventTitle = s ? s.title : 'Suggestion ' + index;
   ensureVoterName((name) => {
     const entry = getVoteEntry(key);
     if (hasVoted(key, name)) {
@@ -4167,10 +4260,10 @@ function voteSuggestion(btn, index) {
   });
 }
 
-function voteApproved(btn, index) {
-  const key = getVoteKey('approved', index);
-  const approved = suggestions.filter(s => s.approved);
-  const eventTitle = approved[index] ? approved[index].title : 'Approved ' + index;
+function voteApproved(btn, eventId) {
+  const key = eventId;
+  const matchedSuggestion = suggestions.find(s => s.id === eventId);
+  const eventTitle = matchedSuggestion ? matchedSuggestion.title : 'Approved ' + eventId;
   ensureVoterName((name) => {
     const entry = getVoteEntry(key);
     if (hasVoted(key, name)) {
@@ -4947,16 +5040,20 @@ try { renderCalendar(); } catch(e) { console.warn('renderCalendar init error:', 
         .then(function(r) { return r.json(); })
         .then(function(data) {
           if (!data) return;
-          if (data.sfEvents && data.sfEvents.length) { sfEvents = data.sfEvents; }
-          if (data.volunteerEvents && data.volunteerEvents.length) { volunteerEvents = data.volunteerEvents; }
-          if (data.teamEvents && data.teamEvents.length) { teamEvents = data.teamEvents; }
+          // Helper to backfill IDs on loaded curated events
+          function backfillIds(arr) { arr.forEach(function(e) { if (!e.id) e.id = slugify(e.title); }); }
+          if (data.sfEvents && data.sfEvents.length) { sfEvents = data.sfEvents; backfillIds(sfEvents); }
+          if (data.volunteerEvents && data.volunteerEvents.length) { volunteerEvents = data.volunteerEvents; backfillIds(volunteerEvents); }
+          if (data.teamEvents && data.teamEvents.length) { teamEvents = data.teamEvents; backfillIds(teamEvents); }
           if (data.pastEvents && data.pastEvents.length) { pastEvents = data.pastEvents; }
           if (data.suggestions && data.suggestions.length) {
-            suggestions = data.suggestions.map(function(s) {
+            suggestions = data.suggestions.map(function(s, idx) {
               if (s.status === 'approved') s.approved = true;
               if (typeof s.research === 'string' && s.research.charAt(0) === '{') {
                 try { s.research = JSON.parse(s.research); } catch(e) {}
               }
+              // Backfill stable ID for suggestions that predate the ID system
+              if (!s.id) { s.id = 'sug-legacy-' + idx; }
               return s;
             });
           }
