@@ -2744,6 +2744,63 @@ function archiveEvent(arrayName, index) {
   showToast('📁 Event archived!');
 }
 
+// ========== SPORTS TAB ==========
+function renderSportsGrid(filter) {
+  const grid = document.getElementById('sports-grid');
+  if (!grid) return;
+  const filtered = filter === 'all' ? sportsGames : sportsGames.filter(g => g.team === filter);
+  grid.innerHTML = filtered.map((e, i) => {
+    const origIndex = sportsGames.indexOf(e);
+    const voteKey = getVoteKey('curated', 'sportsGames-' + origIndex);
+    const votes = voteData[voteKey] || { count: 0, voters: [] };
+    const teamClass = 'sports-' + e.team;
+    const priceInfo = e.price ? '<div>\u{1F4B0} ' + e.price + '</div>' : '';
+    const linkBtn = e.link ? '<a href="' + e.link + '" target="_blank" class="learn-more">Learn More \u2197</a>' : '';
+    return '<div class="event-card ' + teamClass + '">' +
+      '<div class="type-stripe"></div>' +
+      '<span class="tag ' + e.team + '">' + e.team.charAt(0).toUpperCase() + e.team.slice(1) + '</span>' +
+      '<h3>' + e.title + '</h3>' +
+      '<div>\u{1F4C5} ' + e.date + '</div>' +
+      '<div>\u{1F4CD} ' + e.location + '</div>' +
+      priceInfo +
+      '<p class="desc">' + e.description + '</p>' +
+      '<button class="vote-btn" onclick="voteSportsGame(' + origIndex + ')">\u{1F5F3}\uFE0F Vote <span>(' + votes.count + ')</span></button>' +
+      linkBtn +
+    '</div>';
+  }).join('');
+  // Update count badge
+  const countEl = document.getElementById('sports-count');
+  if (countEl) countEl.textContent = sportsGames.length;
+}
+
+function voteSportsGame(index) {
+  const voteKey = getVoteKey('curated', 'sportsGames-' + index);
+  if (!voteData[voteKey]) voteData[voteKey] = { count: 0, voters: [] };
+  const voterName = window.currentUserName || 'Anonymous';
+  if (voteData[voteKey].voters.includes(voterName)) {
+    voteData[voteKey].voters = voteData[voteKey].voters.filter(v => v !== voterName);
+    voteData[voteKey].count = Math.max(0, voteData[voteKey].count - 1);
+  } else {
+    voteData[voteKey].voters.push(voterName);
+    voteData[voteKey].count++;
+  }
+  saveToServer('voteData', voteData);
+  const activePill = document.querySelector('[data-sports-filter].active');
+  const currentFilter = activePill ? activePill.getAttribute('data-sports-filter') : 'all';
+  renderSportsGrid(currentFilter);
+}
+
+// Sports filter pills
+document.addEventListener('click', function(e) {
+  if (e.target.matches('[data-sports-filter]')) {
+    document.querySelectorAll('[data-sports-filter]').forEach(p => p.classList.remove('active'));
+    e.target.classList.add('active');
+    renderSportsGrid(e.target.getAttribute('data-sports-filter'));
+  }
+});
+
+
+
 function renderAllGrids() {
   renderGrid('events-grid', sfEvents, 'sfEvents');
   renderGrid('volunteer-grid', volunteerEvents, 'volunteerEvents');
@@ -4812,61 +4869,6 @@ function submitCreateEvent() {
   closeCreateEvent();
 }
 
-
-// ========== SPORTS TAB ==========
-function renderSportsGrid(filter) {
-  const grid = document.getElementById('sports-grid');
-  if (!grid) return;
-  const filtered = filter === 'all' ? sportsGames : sportsGames.filter(g => g.team === filter);
-  grid.innerHTML = filtered.map((e, i) => {
-    const origIndex = sportsGames.indexOf(e);
-    const voteKey = getVoteKey('curated', 'sportsGames-' + origIndex);
-    const votes = voteData[voteKey] || { count: 0, voters: [] };
-    const teamClass = 'sports-' + e.team;
-    const priceInfo = e.price ? '<div>\u{1F4B0} ' + e.price + '</div>' : '';
-    const linkBtn = e.link ? '<a href="' + e.link + '" target="_blank" class="learn-more">Learn More \u2197</a>' : '';
-    return '<div class="event-card ' + teamClass + '">' +
-      '<div class="type-stripe"></div>' +
-      '<span class="tag ' + e.team + '">' + e.team.charAt(0).toUpperCase() + e.team.slice(1) + '</span>' +
-      '<h3>' + e.title + '</h3>' +
-      '<div>\u{1F4C5} ' + e.date + '</div>' +
-      '<div>\u{1F4CD} ' + e.location + '</div>' +
-      priceInfo +
-      '<p class="desc">' + e.description + '</p>' +
-      '<button class="vote-btn" onclick="voteSportsGame(' + origIndex + ')">\u{1F5F3}\uFE0F Vote <span>(' + votes.count + ')</span></button>' +
-      linkBtn +
-    '</div>';
-  }).join('');
-  // Update count badge
-  const countEl = document.getElementById('sports-count');
-  if (countEl) countEl.textContent = sportsGames.length;
-}
-
-function voteSportsGame(index) {
-  const voteKey = getVoteKey('curated', 'sportsGames-' + index);
-  if (!voteData[voteKey]) voteData[voteKey] = { count: 0, voters: [] };
-  const voterName = window.currentUserName || 'Anonymous';
-  if (voteData[voteKey].voters.includes(voterName)) {
-    voteData[voteKey].voters = voteData[voteKey].voters.filter(v => v !== voterName);
-    voteData[voteKey].count = Math.max(0, voteData[voteKey].count - 1);
-  } else {
-    voteData[voteKey].voters.push(voterName);
-    voteData[voteKey].count++;
-  }
-  saveToServer('voteData', voteData);
-  const activePill = document.querySelector('[data-sports-filter].active');
-  const currentFilter = activePill ? activePill.getAttribute('data-sports-filter') : 'all';
-  renderSportsGrid(currentFilter);
-}
-
-// Sports filter pills
-document.addEventListener('click', function(e) {
-  if (e.target.matches('[data-sports-filter]')) {
-    document.querySelectorAll('[data-sports-filter]').forEach(p => p.classList.remove('active'));
-    e.target.classList.add('active');
-    renderSportsGrid(e.target.getAttribute('data-sports-filter'));
-  }
-});
 
 </script>
 </body>
