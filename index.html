@@ -1723,6 +1723,19 @@
 }
 .btn-create-event:hover { background: var(--accent2); }
 
+
+  /* ===== SPORTS TAB TEAM COLORS ===== */
+  .event-card.sports-giants .type-stripe { background: #FD5A1E; }
+  .event-card.sports-warriors .type-stripe { background: #1D428A; }
+  .event-card.sports-sharks .type-stripe { background: #006D75; }
+  .event-card.sports-bayfc .type-stripe { background: #E31837; }
+  .event-card.sports-quakes .type-stripe { background: #0067B1; }
+  .tag.giants { background: rgba(253,90,30,0.1); color: #FD5A1E; }
+  .tag.warriors { background: rgba(29,66,138,0.1); color: #1D428A; }
+  .tag.sharks { background: rgba(0,109,117,0.1); color: #006D75; }
+  .tag.bayfc { background: rgba(227,24,55,0.1); color: #E31837; }
+  .tag.quakes { background: rgba(0,103,177,0.1); color: #0067B1; }
+
 </style>
 </head>
 <body>
@@ -1854,6 +1867,7 @@ fetch('/api/quotes')
   <div class="tab" data-tab="volunteer">Volunteer <span class="count" id="volunteer-count">5</span></div>
   <div class="tab" data-tab="team">Team Building <span class="count" id="team-count">8</span></div>
   <div class="tab" data-tab="happyhour">Happy Hour</div>
+  <div class="tab" data-tab="sports">Sports <span class="count" id="sports-count">0</span></div>
   <div class="tab" data-tab="calendar">Calendar</div>
   <div class="tab" data-tab="suggestions">Suggestions <span class="count" id="suggestions-count">0</span></div>
   <div class="tab" data-tab="snacks">Snacks 🍿</div>
@@ -1907,6 +1921,27 @@ fetch('/api/quotes')
         <p>No archived events yet. Past events will appear here after the monthly refresh.</p>
       </div>
     </div>
+  </div>
+
+    <!-- ===== SPORTS TAB ===== -->
+  <div class="tab-content" id="tab-sports">
+
+    <div class="section-header">
+      <h2>🏆 Upcoming Games</h2>
+      <p>Vote for the games you want to attend with the team!</p>
+    </div>
+
+    <div class="filter-pills">
+      <div class="pill active" data-sports-filter="all">All Teams</div>
+      <div class="pill" data-sports-filter="giants">Giants</div>
+      <div class="pill" data-sports-filter="warriors">Warriors</div>
+      <div class="pill" data-sports-filter="sharks">Sharks</div>
+      <div class="pill" data-sports-filter="bayfc">Bay FC</div>
+      <div class="pill" data-sports-filter="quakes">Earthquakes</div>
+    </div>
+
+    <div class="events-grid" id="sports-grid"></div>
+
   </div>
 
   <!-- ===== CALENDAR TAB ===== -->
@@ -2469,6 +2504,30 @@ let teamEvents = [
   { title: "Brew Boat — Pedal-Powered Cruise", date: "Book anytime", location: "SF Waterfront", description: "6–26 passengers pedal around the waterfront. BYOB. Team effort literally required.", type: "team", price: "Group rate", link: "https://www.eventsinminutes.com/blog/team-building-small-groups-san-francisco-2026/" },
 ];
 
+// ========== SPORTS GAMES ==========
+let sportsGames = [
+  { title: "Giants vs. Padres", date: "Fri, Mar 27, 7:15 PM", location: "Oracle Park, SF", description: "Opening weekend series. Grab your glove and your garlic fries.", type: "giants", team: "giants", free: false, price: "From $25", link: "https://www.mlb.com/giants/tickets" },
+  { title: "Giants vs. Padres", date: "Sat, Mar 28, 1:05 PM", location: "Oracle Park, SF", description: "Saturday matinee game. Sun, baseball, and team bonding.", type: "giants", team: "giants", free: false, price: "From $25", link: "https://www.mlb.com/giants/tickets" },
+  { title: "Giants vs. Padres", date: "Sun, Mar 29, 1:05 PM", location: "Oracle Park, SF", description: "Series finale. Sunday Funday at the ballpark.", type: "giants", team: "giants", free: false, price: "From $25", link: "https://www.mlb.com/giants/tickets" },
+  { title: "Warriors vs. Rockets", date: "Sun, Mar 29, 5:30 PM", location: "Chase Center, SF", description: "Late-season push. Steph Curry doing Steph Curry things.", type: "warriors", team: "warriors", free: false, price: "From $45", link: "https://www.nba.com/warriors/tickets" },
+  { title: "Giants vs. Cardinals", date: "Mon, Mar 30, 6:45 PM", location: "Oracle Park, SF", description: "Monday night baseball under the lights.", type: "giants", team: "giants", free: false, price: "From $20", link: "https://www.mlb.com/giants/tickets" },
+  { title: "Warriors vs. Kings", date: "Wed, Apr 1, 7:00 PM", location: "Chase Center, SF", description: "NorCal rivalry game. The Bay vs. Sacramento.", type: "warriors", team: "warriors", free: false, price: "From $40", link: "https://www.nba.com/warriors/tickets" },
+  { title: "Sharks vs. Flames", date: "Thu, Apr 3, 7:30 PM", location: "SAP Center, San Jose", description: "Hockey night in San Jose. Teal town showing up.", type: "sharks", team: "sharks", free: false, price: "From $30", link: "https://www.nhl.com/sharks/tickets" },
+  { title: "Bay FC vs. North Carolina Courage", date: "Sat, Apr 5, 7:00 PM", location: "PayPal Park, San Jose", description: "NWSL action. Support the Bay Area's women's soccer team.", type: "bayfc", team: "bayfc", free: false, price: "From $25", link: "https://www.bayfcsoccer.com/tickets" },
+  { title: "Giants vs. Dodgers", date: "Fri, Apr 11, 7:15 PM", location: "Oracle Park, SF", description: "THE rivalry. Giants vs. Dodgers. Enough said.", type: "giants", team: "giants", free: false, price: "From $35", link: "https://www.mlb.com/giants/tickets" },
+  { title: "Giants vs. Dodgers", date: "Sat, Apr 12, 1:05 PM", location: "Oracle Park, SF", description: "Day game edition of the best rivalry in baseball.", type: "giants", team: "giants", free: false, price: "From $35", link: "https://www.mlb.com/giants/tickets" },
+  { title: "Earthquakes vs. LAFC", date: "Sat, Apr 12, 7:30 PM", location: "PayPal Park, San Jose", description: "MLS action. The Quakes host star-studded LAFC.", type: "quakes", team: "quakes", free: false, price: "From $25", link: "https://www.sjearthquakes.com/tickets" },
+  { title: "Warriors vs. Lakers", date: "Tue, Apr 14, 7:30 PM", location: "Chase Center, SF", description: "Steph vs. LeBron. Marquee matchup. Get loud.", type: "warriors", team: "warriors", free: false, price: "From $60", link: "https://www.nba.com/warriors/tickets" },
+  { title: "Sharks vs. Kraken", date: "Sat, Apr 19, 7:30 PM", location: "SAP Center, San Jose", description: "Late-season hockey. The Sharks battle Seattle.", type: "sharks", team: "sharks", free: false, price: "From $25", link: "https://www.nhl.com/sharks/tickets" },
+  { title: "Bay FC vs. Angel City FC", date: "Sat, Apr 19, 5:00 PM", location: "PayPal Park, San Jose", description: "SoCal meets NorCal. A great Saturday afternoon out.", type: "bayfc", team: "bayfc", free: false, price: "From $25", link: "https://www.bayfcsoccer.com/tickets" },
+  { title: "Giants vs. Reds", date: "Fri, Apr 25, 7:15 PM", location: "Oracle Park, SF", description: "Friday night at Oracle. Fireworks postgame.", type: "giants", team: "giants", free: false, price: "From $20", link: "https://www.mlb.com/giants/tickets" },
+  { title: "Earthquakes vs. Galaxy", date: "Sat, May 2, 7:30 PM", location: "PayPal Park, San Jose", description: "Cali Clasico. The biggest rivalry in MLS.", type: "quakes", team: "quakes", free: false, price: "From $30", link: "https://www.sjearthquakes.com/tickets" },
+  { title: "Giants vs. Mets", date: "Fri, May 9, 7:15 PM", location: "Oracle Park, SF", description: "Friday night series opener. Garlic fries are calling.", type: "giants", team: "giants", free: false, price: "From $25", link: "https://www.mlb.com/giants/tickets" },
+  { title: "Bay FC vs. Portland Thorns", date: "Sat, May 10, 5:00 PM", location: "PayPal Park, San Jose", description: "Pacific Northwest showdown. Great matchup.", type: "bayfc", team: "bayfc", free: false, price: "From $25", link: "https://www.bayfcsoccer.com/tickets" },
+  { title: "Earthquakes vs. Portland Timbers", date: "Sat, May 17, 7:30 PM", location: "PayPal Park, San Jose", description: "Cascadia rivalry extends south. Loud atmosphere.", type: "quakes", team: "quakes", free: false, price: "From $25", link: "https://www.sjearthquakes.com/tickets" },
+  { title: "Giants vs. Yankees", date: "Tue, May 20, 6:45 PM", location: "Oracle Park, SF", description: "Interleague classic. The Bronx Bombers visit the Bay.", type: "giants", team: "giants", free: false, price: "From $40", link: "https://www.mlb.com/giants/tickets" }
+];
+
 // ========== RENDER FUNCTIONS ==========
 function renderCard(event, arrayName, index) {
   const typeClass = event.type;
@@ -2689,6 +2748,7 @@ function renderAllGrids() {
   renderGrid('events-grid', sfEvents, 'sfEvents');
   renderGrid('volunteer-grid', volunteerEvents, 'volunteerEvents');
   renderGrid('team-grid', teamEvents, 'teamEvents');
+  renderSportsGrid('all');
       // Update upcoming events count to exclude past events
       var upcomingCount = [sfEvents, volunteerEvents, teamEvents].reduce(function(sum, arr) { return sum + arr.filter(function(e) { return !isEventPast(e.date); }).length; }, 0);
       var statCards = document.querySelectorAll('.stat-card');
@@ -4751,6 +4811,63 @@ function submitCreateEvent() {
   window.open(url, '_blank');
   closeCreateEvent();
 }
+
+
+// ========== SPORTS TAB ==========
+function renderSportsGrid(filter) {
+  const grid = document.getElementById('sports-grid');
+  if (!grid) return;
+  const filtered = filter === 'all' ? sportsGames : sportsGames.filter(g => g.team === filter);
+  grid.innerHTML = filtered.map((e, i) => {
+    const origIndex = sportsGames.indexOf(e);
+    const voteKey = getVoteKey('curated', 'sportsGames-' + origIndex);
+    const votes = voteData[voteKey] || { count: 0, voters: [] };
+    const teamClass = 'sports-' + e.team;
+    const priceInfo = e.price ? '<div>\u{1F4B0} ' + e.price + '</div>' : '';
+    const linkBtn = e.link ? '<a href="' + e.link + '" target="_blank" class="learn-more">Learn More \u2197</a>' : '';
+    return '<div class="event-card ' + teamClass + '">' +
+      '<div class="type-stripe"></div>' +
+      '<span class="tag ' + e.team + '">' + e.team.charAt(0).toUpperCase() + e.team.slice(1) + '</span>' +
+      '<h3>' + e.title + '</h3>' +
+      '<div>\u{1F4C5} ' + e.date + '</div>' +
+      '<div>\u{1F4CD} ' + e.location + '</div>' +
+      priceInfo +
+      '<p class="desc">' + e.description + '</p>' +
+      '<button class="vote-btn" onclick="voteSportsGame(' + origIndex + ')">\u{1F5F3}\uFE0F Vote <span>(' + votes.count + ')</span></button>' +
+      linkBtn +
+    '</div>';
+  }).join('');
+  // Update count badge
+  const countEl = document.getElementById('sports-count');
+  if (countEl) countEl.textContent = sportsGames.length;
+}
+
+function voteSportsGame(index) {
+  const voteKey = getVoteKey('curated', 'sportsGames-' + index);
+  if (!voteData[voteKey]) voteData[voteKey] = { count: 0, voters: [] };
+  const voterName = window.currentUserName || 'Anonymous';
+  if (voteData[voteKey].voters.includes(voterName)) {
+    voteData[voteKey].voters = voteData[voteKey].voters.filter(v => v !== voterName);
+    voteData[voteKey].count = Math.max(0, voteData[voteKey].count - 1);
+  } else {
+    voteData[voteKey].voters.push(voterName);
+    voteData[voteKey].count++;
+  }
+  saveToServer('voteData', voteData);
+  const activePill = document.querySelector('[data-sports-filter].active');
+  const currentFilter = activePill ? activePill.getAttribute('data-sports-filter') : 'all';
+  renderSportsGrid(currentFilter);
+}
+
+// Sports filter pills
+document.addEventListener('click', function(e) {
+  if (e.target.matches('[data-sports-filter]')) {
+    document.querySelectorAll('[data-sports-filter]').forEach(p => p.classList.remove('active'));
+    e.target.classList.add('active');
+    renderSportsGrid(e.target.getAttribute('data-sports-filter'));
+  }
+});
+
 </script>
 </body>
 </html>
