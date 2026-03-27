@@ -2749,26 +2749,40 @@ function renderSportsGrid(filter) {
   const grid = document.getElementById('sports-grid');
   if (!grid) return;
   const filtered = filter === 'all' ? sportsGames : sportsGames.filter(g => g.team === filter);
+  const teamLabels = { giants: 'Giants', warriors: 'Warriors', sharks: 'Sharks', bayfc: 'Bay FC', quakes: 'Earthquakes' };
   grid.innerHTML = filtered.map((e, i) => {
     const origIndex = sportsGames.indexOf(e);
     const voteKey = getVoteKey('curated', 'sportsGames-' + origIndex);
-    const votes = voteData[voteKey] || { count: 0, voters: [] };
+    const entry = getVoteEntry(voteKey);
+    const voteCount = entry.voters.length;
+    const userVoted = currentVoterName && hasVoted(voteKey, currentVoterName);
+    const votedClass = userVoted ? ' voted' : '';
+    const milestone = voteCount >= VOTE_THRESHOLD ? '<span class="milestone-badge">\uD83C\uDF1F Popular!</span>' : '';
+    const votersText = voteCount > 0 ? '<div class="voters-list">Voted: ' + entry.voters.join(', ') + '</div>' : '';
     const teamClass = 'sports-' + e.team;
-    const priceInfo = e.price ? '<div>\u{1F4B0} ' + e.price + '</div>' : '';
-    const linkBtn = e.link ? '<a href="' + e.link + '" target="_blank" class="learn-more">Learn More \u2197</a>' : '';
-    return '<div class="event-card ' + teamClass + '">' +
-      '<div class="type-stripe"></div>' +
-      '<span class="tag ' + e.team + '">' + e.team.charAt(0).toUpperCase() + e.team.slice(1) + '</span>' +
-      '<h3>' + e.title + '</h3>' +
-      '<div>\u{1F4C5} ' + e.date + '</div>' +
-      '<div>\u{1F4CD} ' + e.location + '</div>' +
-      priceInfo +
-      '<p class="desc">' + e.description + '</p>' +
-      '<button class="vote-btn" onclick="voteSportsGame(' + origIndex + ')">\u{1F5F3}\uFE0F Vote <span>(' + votes.count + ')</span></button>' +
-      linkBtn +
-    '</div>';
+    const priceInfo = e.price ? '<div>\uD83D\uDCB0 ' + e.price + '</div>' : '';
+    const freeTag = e.free ? '<span class="tag free">FREE</span>' : '';
+    return `
+    <div class="event-card ${teamClass}" data-type="${e.team}" data-free="${e.free || false}">
+      <div class="type-stripe"></div>
+      <div>
+        <span class="tag ${e.team}">${teamLabels[e.team] || e.team}</span>${freeTag}${milestone}
+      </div>
+      <h3>${e.title}</h3>
+      <div class="meta">
+        <div>\uD83D\uDCC5 ${getDayOfWeek(e.date)}${e.date}</div>
+        <div>\uD83D\uDCCD ${e.location}</div>
+        ${priceInfo}
+      </div>
+      <div class="description">${e.description}</div>
+      <div class="actions">
+        <button class="btn btn-vote${votedClass}" onclick="voteSportsGame(${origIndex})">\uD83D\uDDF3\uFE0F ${userVoted ? 'Voted' : 'Vote'} <span class="vote-count">(${voteCount})</span></button>
+        <a href="${e.link}" target="_blank" class="btn btn-outline">Learn More \u2197</a>
+      </div>
+      ${votersText}
+    </div>
+  `;
   }).join('');
-  // Update count badge
   const countEl = document.getElementById('sports-count');
   if (countEl) countEl.textContent = sportsGames.length;
 }
@@ -2798,6 +2812,7 @@ document.addEventListener('click', function(e) {
     renderSportsGrid(e.target.getAttribute('data-sports-filter'));
   }
 });
+
 
 
 
