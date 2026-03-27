@@ -1872,7 +1872,7 @@ fetch('/api/quotes')
     </div>
     <div class="stat-card yellow">
       <div class="number">0</div>
-      <div class="label">Events Planned</div>
+      <div class="label">This Month's Events</div>
     </div>
     <div class="stat-card blue">
       <div class="number">16</div>
@@ -2694,9 +2694,12 @@ function renderAllGrids() {
       var statCards = document.querySelectorAll('.stat-card');
       statCards.forEach(function(card) {
         if (card.textContent.indexOf('Upcoming Events') !== -1) { var numEl = card.querySelector('.number'); if (numEl) numEl.textContent = upcomingCount; }
-        if (card.textContent.indexOf('Events Planned') !== -1) {
-          var plannedCount = sfEvents.length + volunteerEvents.length + teamEvents.length;
-          var numEl = card.querySelector('.number'); if (numEl) numEl.textContent = plannedCount;
+        if (card.textContent.indexOf("This Month") !== -1) {
+          var now = new Date(); var curMonth = now.getMonth(); var curYear = now.getFullYear();
+          var mo = {Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};
+          function isThisMonth(dateStr) { if (!dateStr) return false; var mm = dateStr.match(/\b(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\b/); if (!mm) return false; var yr = 2026; var ym = dateStr.match(/\b(202\d)\b/); if (ym) yr = parseInt(ym[1]); return mo[mm[1]] === curMonth && yr === curYear; }
+          var thisMonthCount = [sfEvents, volunteerEvents, teamEvents].reduce(function(sum, arr) { return sum + arr.filter(function(e) { return isThisMonth(e.date); }).length; }, 0);
+          var numEl = card.querySelector('.number'); if (numEl) numEl.textContent = thisMonthCount;
         }
       });
 
