@@ -2695,7 +2695,7 @@ function renderAllGrids() {
       statCards.forEach(function(card) {
         if (card.textContent.indexOf('Upcoming Events') !== -1) { var numEl = card.querySelector('.number'); if (numEl) numEl.textContent = upcomingCount; }
         if (card.textContent.indexOf('Events Planned') !== -1) {
-          var plannedCount = (typeof suggestions !== 'undefined') ? suggestions.filter(function(s) { return s.approved; }).length : 0;
+          var plannedCount = sfEvents.length + volunteerEvents.length + teamEvents.length;
           var numEl = card.querySelector('.number'); if (numEl) numEl.textContent = plannedCount;
         }
       });
