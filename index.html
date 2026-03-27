@@ -1927,17 +1927,22 @@ fetch('/api/quotes')
   <div class="tab-content" id="tab-sports">
 
     <div class="section-header">
-      <h2>🏆 Upcoming Games</h2>
-      <p>Vote for the games you want to attend with the team!</p>
+      <h2><span class="emoji">🏆</span> Sports</h2>
+      <div class="filter-pills">
+        <div class="pill active" data-sports-filter="all">All Teams</div>
+        <div class="pill" data-sports-filter="giants">Giants</div>
+        <div class="pill" data-sports-filter="warriors">Warriors</div>
+        <div class="pill" data-sports-filter="sharks">Sharks</div>
+        <div class="pill" data-sports-filter="bayfc">Bay FC</div>
+        <div class="pill" data-sports-filter="quakes">Earthquakes</div>
+      </div>
     </div>
-
-    <div class="filter-pills">
-      <div class="pill active" data-sports-filter="all">All Teams</div>
-      <div class="pill" data-sports-filter="giants">Giants</div>
-      <div class="pill" data-sports-filter="warriors">Warriors</div>
-      <div class="pill" data-sports-filter="sharks">Sharks</div>
-      <div class="pill" data-sports-filter="bayfc">Bay FC</div>
-      <div class="pill" data-sports-filter="quakes">Earthquakes</div>
+    <div class="suggest-cta">
+      <div class="suggest-cta-icon">🏅</div>
+      <div class="suggest-cta-text">
+        <h4>Want to see a game with the team?</h4>
+        <p>Vote for the games you want to attend and we'll organize a group outing!</p>
+      </div>
     </div>
 
     <div class="events-grid" id="sports-grid"></div>
