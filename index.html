@@ -60,12 +60,15 @@
   .logo-icon {
     width: 44px;
     height: 44px;
-    background: rgba(255,255,255,0.12);
     border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 22px;
+    overflow: hidden;
+  }
+  .logo-icon svg {
+    width: 44px;
+    height: 44px;
   }
   .logo h1 {
     font-family: 'Hanken Grotesk', sans-serif;
@@ -1766,7 +1769,7 @@
 <div class="header">
   <div class="header-top">
     <div class="logo">
-      <div class="logo-icon">🎉</div>
+      <div class="logo-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 480" width="44" height="44"><rect x="24" y="24" width="210" height="210" rx="38" fill="#294339"/><rect x="68" y="72" width="30" height="118" rx="2" fill="#F5F1EA"/><rect x="68" y="72" width="116" height="30" rx="2" fill="#F5F1EA"/><rect x="68" y="118" width="84" height="24" rx="2" fill="#F5F1EA"/><rect x="246" y="24" width="210" height="210" rx="38" fill="#F5F1EA"/><rect x="290" y="72" width="30" height="118" rx="2" fill="#294339"/><path d="M 320,72 L 364,72 C 394,72 406,90 406,110 C 406,130 394,148 364,148 L 320,148 Z" fill="#294339"/><path d="M 320,96 L 358,96 C 376,96 382,103 382,110 C 382,117 376,124 358,124 L 320,124 Z" fill="#F5F1EA"/><rect x="24" y="246" width="210" height="210" rx="38" fill="#F5F1EA"/><rect x="68" y="294" width="30" height="118" rx="2" fill="#294339"/><path d="M 98,294 L 142,294 C 172,294 184,312 184,332 C 184,352 172,370 142,370 L 98,370 Z" fill="#294339"/><path d="M 98,318 L 136,318 C 154,318 160,325 160,332 C 160,339 154,346 136,346 L 98,346 Z" fill="#F5F1EA"/><rect x="246" y="246" width="210" height="210" rx="38" fill="#294339"/><path d="M 404,294 L 358,294 C 332,294 318,312 318,334 L 318,372 C 318,394 332,410 358,410 L 404,410 L 404,382 L 362,382 C 354,382 350,376 350,372 L 350,336 C 350,330 354,326 362,326 L 404,326 Z" fill="#F5F1EA"/></svg></div>
       <div>
         <h1>FERMAT</h1>
         <p>Party Planning Committee</p>
@@ -1906,10 +1909,6 @@ fetch('/api/quotes')
     <div class="stat-card orange">
       <div class="number">22</div>
       <div class="label">Upcoming Events</div>
-    </div>
-    <div class="stat-card yellow">
-      <div class="number">0</div>
-      <div class="label">This Month's Events</div>
     </div>
     <div class="stat-card blue">
       <div class="number">16</div>
@@ -2998,13 +2997,6 @@ function renderAllGrids() {
       var statCards = document.querySelectorAll('.stat-card');
       statCards.forEach(function(card) {
         if (card.textContent.indexOf('Upcoming Events') !== -1) { var numEl = card.querySelector('.number'); if (numEl) numEl.textContent = upcomingCount; }
-        if (card.textContent.indexOf("This Month") !== -1) {
-          var now = new Date(); var curMonth = now.getMonth(); var curYear = now.getFullYear();
-          var mo = {Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};
-          function isThisMonth(dateStr) { if (!dateStr) return false; var mm = dateStr.match(/\b(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\b/); if (!mm) return false; var yr = 2026; var ym = dateStr.match(/\b(202\d)\b/); if (ym) yr = parseInt(ym[1]); return mo[mm[1]] === curMonth && yr === curYear; }
-          var thisMonthCount = [sfEvents, volunteerEvents, teamEvents].reduce(function(sum, arr) { return sum + arr.filter(function(e) { return isThisMonth(e.date); }).length; }, 0);
-          var numEl = card.querySelector('.number'); if (numEl) numEl.textContent = thisMonthCount;
-        }
       });
 
   // Update tab badge counts
